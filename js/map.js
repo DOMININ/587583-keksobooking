@@ -2,13 +2,18 @@
 
 var AVATAR_PATH = 'img/avatars/';
 var AVATAR_FORMAT = '.png';
+var USER = 'user0';
+var NIGHT_PRICE = '₽/ночь';
+var ROOMS = ' комнаты для ';
+var GUESTS = ' гостей';
+var CHECKIN_AFTER = 'Заезд после ';
+var CHECKOUT_BEFORE = ', выезд до ';
 var STICKER_MIN_X = 0;
 var STICKER_MIN_Y = 130;
 var STICKER_MAX_Y = 630;
 var PIN_LIMIT = 8;
 var PRICE_MIN = 1000;
 var PRICE_MAX = 1000000;
-var TYPES_MIN = 0;
 var TYPES_MAX = 3;
 var ROOMS_MIN = 1;
 var ROOMS_MAX = 5;
@@ -26,7 +31,12 @@ var STICKER_WIDTH = 50;
 var STICKER_HEIGHT = 70;
 var TEXT_TITLE = 'заголовок объявления';
 var HOUSES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var TYPES = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 var REGISTRATION_TIMES = ['12:00', '13:00', '14:00'];
 var EVICTION_TIMES = ['12:00', '13:00', '14:00'];
 var CONDITIONS = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -36,20 +46,24 @@ var generatingRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
+var generatingRandomNumeral = function (objects) {
+  return objects[Object.keys(objects)[Math.floor(Math.random() * TYPES_MAX)]];
+};
+
 var createPinCardData = function (i) {
   var randomCoordinateX = generatingRandomNumber(STICKER_MIN_X, stickerBlockWidth);
   var randomCoordinateY = generatingRandomNumber(STICKER_MIN_Y, STICKER_MAX_Y);
 
   return {
     author: {
-      avatar: AVATAR_PATH + 'user0' + (i + 1) + AVATAR_FORMAT
+      avatar: AVATAR_PATH + USER + (i + 1) + AVATAR_FORMAT
     },
 
     offer: {
       title: HOUSES[i],
       address: randomCoordinateX + ', ' + randomCoordinateY,
       price: generatingRandomNumber(PRICE_MIN, PRICE_MAX),
-      type: TYPES[generatingRandomNumber(TYPES_MIN, TYPES_MAX)],
+      type: generatingRandomNumeral(TYPES),
       rooms: generatingRandomNumber(ROOMS_MIN, ROOMS_MAX),
       guests: generatingRandomNumber(GUESTS_MIN, GUESTS_MAX),
       checkin: REGISTRATION_TIMES[generatingRandomNumber(CHECKIN_MIN, CHECKIN_MAX)],
@@ -84,10 +98,10 @@ var createDataElement = function (templateElement, data) {
 
   elementDescription.querySelector('.popup__title').textContent = data.offer.title;
   elementDescription.querySelector('.popup__text--address').textContent = data.offer.address;
-  elementDescription.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
-  elementDescription.querySelector('.popup__type').textContent = '!!!ЗАМЕНИТЬ';
-  elementDescription.querySelector('.popup__text--capacity').textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
-  elementDescription.querySelector('.popup__text--time').textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
+  elementDescription.querySelector('.popup__text--price').textContent = data.offer.price + NIGHT_PRICE;
+  elementDescription.querySelector('.popup__type').textContent = data.offer.type;
+  elementDescription.querySelector('.popup__text--capacity').textContent = data.offer.rooms + ROOMS + data.offer.guests + GUESTS;
+  elementDescription.querySelector('.popup__text--time').textContent = CHECKIN_AFTER + data.offer.checkin + CHECKOUT_BEFORE + data.offer.checkout;
   elementDescription.querySelector('.popup__features').textContent = data.offer.features;
   elementDescription.querySelector('.popup__description').textContent = data.offer.description;
   elementDescription.querySelector('.popup__photo').src = data.offer.photos;
@@ -101,7 +115,7 @@ var stickerBlockWidth = mapOverlayElement.offsetWidth;
 var stickerButtonElement = document.querySelector('#pin').content.querySelector('button');
 var stickerElements = document.querySelector('.map__pins');
 
-var dataElement = document.querySelector('#card').content.querySelector('.map__card');
+var cardElement = document.querySelector('#card').content.querySelector('.map__card');
 var beforeElement = document.querySelector('.map__filters-container');
 
 var pinData;
@@ -114,10 +128,9 @@ for (var i = 0; i < PIN_LIMIT; i++) {
   pinData = createPinCardData(i);
   pinFragment.appendChild(createPinElement(stickerButtonElement, pinData));
   stickerElements.appendChild(pinFragment);
-
-  dataFragment.appendChild(createDataElement(dataElement, pinData));
 }
 
+dataFragment.appendChild(createDataElement(cardElement, createPinCardData(0)));
 map.insertBefore(dataFragment, beforeElement);
 
 document.querySelector('.map').classList.remove('map--faded');

@@ -11,14 +11,14 @@ var CHECKOUT_BEFORE = ', выезд до ';
 var STICKER_MIN_X = 0;
 var STICKER_MIN_Y = 130;
 var STICKER_MAX_Y = 630;
-var PIN_LIMIT = 8;
+var PIN_LIMIT = 18;
 var PRICE_MIN = 1000;
 var PRICE_MAX = 1000000;
 var TYPES_MAX = 3;
 var ROOMS_MIN = 1;
 var ROOMS_MAX = 5;
 var GUESTS_MIN = 1;
-var GUESTS_MAX = 20;
+var GUESTS_MAX = 8;
 var CHECKIN_MIN = 0;
 var CHECKIN_MAX = 2;
 var CHECKOUT_MIN = 0;
@@ -29,6 +29,7 @@ var RANDOM_PHOTO_FROM = 0;
 var RANDOM_PHOTO_TO = 2;
 var STICKER_WIDTH = 50;
 var STICKER_HEIGHT = 70;
+var PIN = [];
 var TEXT_TITLE = 'заголовок объявления';
 var HOUSES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var TYPES = {
@@ -60,7 +61,7 @@ var createPinCardData = function (i) {
     },
 
     offer: {
-      title: HOUSES[i],
+      title: PIN[i],
       address: randomCoordinateX + ', ' + randomCoordinateY,
       price: generatingRandomNumber(PRICE_MIN, PRICE_MAX),
       type: generatingRandomNumeral(TYPES),
@@ -81,8 +82,7 @@ var createPinCardData = function (i) {
 };
 
 var createPinElement = function (templateElement, data) {
-  var elementButton;
-  elementButton = templateElement.cloneNode(true);
+  var elementButton = templateElement.cloneNode(true);
   elementButton.style.left = data.location.x - STICKER_WIDTH / 2 + 'px';
   elementButton.style.top = data.location.y - STICKER_HEIGHT + 'px';
 
@@ -93,8 +93,7 @@ var createPinElement = function (templateElement, data) {
 };
 
 var createDataElement = function (templateElement, data) {
-  var elementDescription;
-  elementDescription = templateElement.cloneNode(true);
+  var elementDescription = templateElement.cloneNode(true);
 
   elementDescription.querySelector('.popup__title').textContent = data.offer.title;
   elementDescription.querySelector('.popup__text--address').textContent = data.offer.address;
@@ -109,6 +108,10 @@ var createDataElement = function (templateElement, data) {
 
   return elementDescription;
 };
+
+for (i = 0; i < PIN_LIMIT; i++) {
+  PIN.push(HOUSES[i % HOUSES.length]);
+}
 
 var mapOverlayElement = document.querySelector('.map__overlay');
 var stickerBlockWidth = mapOverlayElement.offsetWidth;

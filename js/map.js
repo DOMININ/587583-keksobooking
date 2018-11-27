@@ -77,9 +77,9 @@ var getAndDeleteRandomItem = function (array) {
   return item;
 };
 
-var createUniqueArray = function (originalArray, len) {
+var createUniqueArray = function (originalArray) {
   var copiedArray = originalArray.slice();
-  len = getRandomNumber(1, originalArray.length);
+  var len = getRandomNumber(1, originalArray.length);
   var result = [];
   var randomIndex;
 
@@ -192,7 +192,7 @@ var createCardElement = function (templateElement, data) {
 
 var mapElement = document.querySelector('.map');
 var mapFiltersElement = document.querySelector('.map__filters-container');
-var cardElement = document.querySelector('#card');
+var cardElement = document.querySelector('#card').cloneNode(true);
 var cardTemplateElement = cardElement.content.querySelector('.map__card');
 var pinsElement = document.querySelector('.map__pins');
 var pinTemplateElement = document.querySelector('#pin').content.querySelector('button');

@@ -27,8 +27,8 @@ var ROOMS_MAX = 5;
 
 var OFFER_LIMIT = 8;
 
-var pictureImageWidth = 45;
-var pictureImageHeight = 40;
+var PICTURE_IMAGE_WIDTH = 45;
+var PICTURE_IMAGE_HEIGHT = 40;
 
 var OFFER_HOUSES = [
   'Большая уютная квартира',
@@ -232,8 +232,8 @@ var createCardPhotosFragment = function (photos) {
     var textNode = document.createTextNode('\n');
 
     element.src = photo;
-    element.width = pictureImageWidth;
-    element.height = pictureImageHeight;
+    element.width = PICTURE_IMAGE_WIDTH;
+    element.height = PICTURE_IMAGE_HEIGHT;
     element.className = 'popup__photo';
 
     fragment.appendChild(element);

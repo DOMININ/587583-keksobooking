@@ -56,6 +56,13 @@ var OFFER_PICTURES = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+var OFFER_PRICES = {
+  palace: '10000',
+  flat: '1000',
+  house: '5000',
+  bungalo: '0'
+};
+
 var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y + PIN_MAIN_HEIGHT);
 
 var KEYCODE_ESC = 27;
@@ -290,14 +297,22 @@ var onPinMainClick = function () {
   pinMainElement.removeEventListener('click', onPinMainClick);
 };
 
+var addDisableAttribute = function (element) {
+  element.setAttribute('disabled', '');
+};
+
+var addInputSelect = function (selected, changeable) {
+  for (var i = 0; i < OFFER_TIMES.length; i++) {
+    if (selected[i].selected) {
+      changeable.selectedIndex = i;
+    }
+  }
+};
+
 var formElement = document.querySelector('.ad-form');
 var formFieldsetElements = document.querySelectorAll('fieldset');
 var formSelectElements = document.querySelectorAll('select');
 var fieldAddressElement = document.querySelector('#address');
-
-var addDisableAttribute = function (element) {
-  element.setAttribute('disabled', '');
-};
 
 formFieldsetElements.forEach(addDisableAttribute);
 formSelectElements.forEach(addDisableAttribute);
@@ -313,3 +328,61 @@ var pinMainElement = document.querySelector('.map__pin--main');
 var offers = createOffers();
 
 pinMainElement.addEventListener('click', onPinMainClick);
+
+formElement.onchange = function () {
+  var inputTypeElement = document.querySelector('#type');
+  var inputPriceElement = document.querySelector('#price');
+  for (var key in OFFER_PRICES) {
+    if (inputTypeElement.value === key) {
+      inputPriceElement.setAttribute('min', OFFER_PRICES[key]);
+      inputPriceElement.setAttribute('placeholder', OFFER_PRICES[key]);
+    }
+  }
+
+  var inputTimeInElement = document.querySelector('#timein');
+  var inputTimeOutElement = document.querySelector('#timeout');
+  addInputSelect(inputTimeInElement, inputTimeOutElement);
+  addInputSelect(inputTimeOutElement, inputTimeInElement); // не изменяется для этого поля
+
+  var inputRoomNumberElement = document.querySelector('#room_number'); // рефакторинг этой части кода
+  var inputCapacityElement = document.querySelector('#capacity');
+  if (inputRoomNumberElement[0].selected) {
+    var guestsCheck = inputCapacityElement.value === '0' || '2' || '3' ? 'Измените количество гостей' : '';
+    inputCapacityElement.setCustomValidity(guestsCheck);
+
+    inputCapacityElement.children[0].setAttribute('disabled', '');
+    inputCapacityElement.children[1].setAttribute('disabled', '');
+    inputCapacityElement.children[2].removeAttribute('disabled');
+    inputCapacityElement.children[3].setAttribute('disabled', '');
+  }
+
+  if (inputRoomNumberElement[1].selected) {
+    guestsCheck = inputCapacityElement.value === '0' || '3' ? 'Измените количество гостей' : '';
+    inputCapacityElement.setCustomValidity(guestsCheck);
+
+    inputCapacityElement.children[0].setAttribute('disabled', '');
+    inputCapacityElement.children[1].removeAttribute('disabled');
+    inputCapacityElement.children[2].removeAttribute('disabled');
+    inputCapacityElement.children[3].setAttribute('disabled', '');
+  }
+
+  if (inputRoomNumberElement[2].selected) {
+    guestsCheck = inputCapacityElement.value === '0' ? 'Измените количество гостей' : '';
+    inputCapacityElement.setCustomValidity(guestsCheck);
+
+    inputCapacityElement.children[0].removeAttribute('disabled');
+    inputCapacityElement.children[1].removeAttribute('disabled');
+    inputCapacityElement.children[2].removeAttribute('disabled');
+    inputCapacityElement.children[3].setAttribute('disabled', '');
+  }
+
+  if (inputRoomNumberElement[3].selected) {
+    guestsCheck = inputCapacityElement.value === '1' || '2' || '3' ? 'Измените количество гостей' : '';
+    inputCapacityElement.setCustomValidity(guestsCheck);
+
+    inputCapacityElement.children[0].setAttribute('disabled', '');
+    inputCapacityElement.children[1].setAttribute('disabled', '');
+    inputCapacityElement.children[2].setAttribute('disabled', '');
+    inputCapacityElement.children[3].removeAttribute('disabled');
+  }
+};

@@ -65,8 +65,6 @@ var OFFER_PRICES = {
 
 var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y + PIN_MAIN_HEIGHT);
 
-var GUESTS_CHECK_MESSAGE = 'Измените количество гостей';
-
 var KEYCODE_ESC = 27;
 
 var getRandomNumber = function (min, max) {
@@ -332,7 +330,6 @@ var onFieldRoomNumberChange = function (evt) {
     if (capacityValue.indexOf(optionElement.value) === -1) {
       optionElement.setAttribute('disabled', '');
     } else {
-      fieldCapacityElement.setCustomValidity(GUESTS_CHECK_MESSAGE);
       optionElement.removeAttribute('disabled');
     }
   });

@@ -335,6 +335,12 @@ var onFieldRoomNumberChange = function (evt) {
   });
 };
 
+var submitSuccess = function () {
+  var mainElement = document.querySelector('main');
+  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
+  mainElement.appendChild(popupSuccessElement);
+};
+
 var formElement = document.querySelector('.ad-form');
 var formFieldsetElements = document.querySelectorAll('fieldset');
 
@@ -361,6 +367,7 @@ var pinMainElement = document.querySelector('.map__pin--main');
 
 var offers = createOffers();
 
+formElement.addEventListener('submit', submitSuccess);
 pinMainElement.addEventListener('click', onPinMainClick);
 fieldTypeElement.addEventListener('change', onFieldTypeChange);
 fieldTimeInElement.addEventListener('change', onFieldTimeInChange);

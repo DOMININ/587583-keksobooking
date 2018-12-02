@@ -335,7 +335,7 @@ var onFieldRoomNumberChange = function (evt) {
   });
 };
 
-var submitSuccess = function () {
+var onFormSubmitSuccess = function () {
   var mainElement = document.querySelector('main');
   var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
   mainElement.appendChild(popupSuccessElement);
@@ -367,7 +367,7 @@ var pinMainElement = document.querySelector('.map__pin--main');
 
 var offers = createOffers();
 
-formElement.addEventListener('submit', submitSuccess);
+formElement.addEventListener('submit', onFormSubmitSuccess);
 pinMainElement.addEventListener('click', onPinMainClick);
 fieldTypeElement.addEventListener('change', onFieldTypeChange);
 fieldTimeInElement.addEventListener('change', onFieldTimeInChange);

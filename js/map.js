@@ -315,7 +315,7 @@ var onFieldTimeOutChange = function (evt) {
   fieldTimeInElement.value = evt.target.value;
 };
 
-var mapRoomNumberToCapacity = {
+var validationMapCapacity = {
   '1': ['1'],
   '2': ['2', '1'],
   '3': ['3', '2', '1'],
@@ -324,7 +324,7 @@ var mapRoomNumberToCapacity = {
 
 var onFieldRoomNumberChange = function (evt) {
   var roomNumberValue = evt.target.value;
-  var capacityValues = mapRoomNumberToCapacity[roomNumberValue];
+  var capacityValues = validationMapCapacity[roomNumberValue];
 
   Array.prototype.forEach.call(fieldCapacityElement.options, function (optionElement) {
     if (capacityValues.indexOf(optionElement.value) === -1) {
@@ -338,15 +338,15 @@ var onFieldRoomNumberChange = function (evt) {
 var onFormChange = function () {
   var fieldRoomNumberValue = fieldRoomNumberElement.value;
   var fieldCapacityValue = fieldCapacityElement.value;
-  var capacityValues = mapRoomNumberToCapacity[fieldRoomNumberValue];
+  var capacityValues = validationMapCapacity[fieldRoomNumberValue];
   if (capacityValues.indexOf(fieldCapacityValue) === -1) {
-    fieldCapacityElement.setCustomValidity('Измените тип поля');
+    fieldCapacityElement.setCustomValidity('Измените значение поля');
+  } else {
+    fieldCapacityElement.setCustomValidity('');
   }
 };
 
 var onFormSubmitSuccess = function (evt) {
-  var mainElement = document.querySelector('main');
-  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
   mainElement.appendChild(popupSuccessElement);
   evt.preventDefault();
 };
@@ -363,6 +363,9 @@ var fieldTypeElement = document.querySelector('#type');
 var fieldPriceElement = document.querySelector('#price');
 var fieldRoomNumberElement = document.querySelector('#room_number');
 var fieldCapacityElement = document.querySelector('#capacity');
+
+var mainElement = document.querySelector('main');
+var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
 
 formFieldsetElements.forEach(addDisableAttribute);
 formSelectElements.forEach(addDisableAttribute);

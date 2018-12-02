@@ -335,10 +335,11 @@ var onFieldRoomNumberChange = function (evt) {
   });
 };
 
-var onFormSubmitSuccess = function () {
+var onFormSubmitSuccess = function (evt) {
   var mainElement = document.querySelector('main');
   var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
   mainElement.appendChild(popupSuccessElement);
+  evt.preventDefault();
 };
 
 var formElement = document.querySelector('.ad-form');

@@ -65,6 +65,8 @@ var OFFER_PRICES = {
 
 var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y + PIN_MAIN_HEIGHT);
 
+var GUESTS_CHECK_MESSAGE = 'Измените количество гостей';
+
 var KEYCODE_ESC = 27;
 
 var getRandomNumber = function (min, max) {
@@ -283,7 +285,6 @@ var removeDisableAttribute = function (element) {
   element.removeAttribute('disabled');
 };
 
-
 var onPinMainClick = function () {
   formElement.classList.remove('ad-form--disabled');
   formFieldsetElements.forEach(removeDisableAttribute);
@@ -301,18 +302,54 @@ var addDisableAttribute = function (element) {
   element.setAttribute('disabled', '');
 };
 
-var addInputSelect = function (selected, changeable) {
-  for (var i = 0; i < OFFER_TIMES.length; i++) {
-    if (selected[i].selected) {
-      changeable.selectedIndex = i;
+var onFieldTypeChange = function (evt) {
+  var typeValue = evt.target.value;
+  var priceValue = OFFER_PRICES[typeValue];
+  fieldPriceElement.setAttribute('min', priceValue);
+  fieldPriceElement.setAttribute('placeholder', priceValue);
+};
+
+var onFieldTimeInChange = function (evt) {
+  fieldTimeOutElement.value = evt.target.value;
+};
+
+var onFieldTimeOutChange = function (evt) {
+  fieldTimeInElement.value = evt.target.value;
+};
+
+var mapRoomNumberToCapacity = {
+  '1': ['1'],
+  '2': ['2', '1'],
+  '3': ['3', '2', '1'],
+  '100': ['0']
+};
+
+var onFieldRoomNumberChange = function (evt) {
+  var roomNumberValue = evt.target.value;
+  var capacityValue = mapRoomNumberToCapacity[roomNumberValue];
+
+  Array.prototype.forEach.call(fieldCapacityElement.options, function (optionElement) {
+    if (capacityValue.indexOf(optionElement.value) === -1) {
+      optionElement.setAttribute('disabled', '');
+    } else {
+      fieldCapacityElement.setCustomValidity(GUESTS_CHECK_MESSAGE);
+      optionElement.removeAttribute('disabled');
     }
-  }
+  });
 };
 
 var formElement = document.querySelector('.ad-form');
 var formFieldsetElements = document.querySelectorAll('fieldset');
+
 var formSelectElements = document.querySelectorAll('select');
+
 var fieldAddressElement = document.querySelector('#address');
+var fieldTimeInElement = document.querySelector('#timein');
+var fieldTimeOutElement = document.querySelector('#timeout');
+var fieldTypeElement = document.querySelector('#type');
+var fieldPriceElement = document.querySelector('#price');
+var fieldRoomNumberElement = document.querySelector('#room_number');
+var fieldCapacityElement = document.querySelector('#capacity');
 
 formFieldsetElements.forEach(addDisableAttribute);
 formSelectElements.forEach(addDisableAttribute);
@@ -328,61 +365,7 @@ var pinMainElement = document.querySelector('.map__pin--main');
 var offers = createOffers();
 
 pinMainElement.addEventListener('click', onPinMainClick);
-
-formElement.onchange = function () {
-  var inputTypeElement = document.querySelector('#type');
-  var inputPriceElement = document.querySelector('#price');
-  for (var key in OFFER_PRICES) {
-    if (inputTypeElement.value === key) {
-      inputPriceElement.setAttribute('min', OFFER_PRICES[key]);
-      inputPriceElement.setAttribute('placeholder', OFFER_PRICES[key]);
-    }
-  }
-
-  var inputTimeInElement = document.querySelector('#timein');
-  var inputTimeOutElement = document.querySelector('#timeout');
-  addInputSelect(inputTimeInElement, inputTimeOutElement);
-  addInputSelect(inputTimeOutElement, inputTimeInElement); // не изменяется для этого поля
-
-  var inputRoomNumberElement = document.querySelector('#room_number'); // рефакторинг этой части кода
-  var inputCapacityElement = document.querySelector('#capacity');
-  if (inputRoomNumberElement[0].selected) {
-    var guestsCheck = inputCapacityElement.value === '0' || '2' || '3' ? 'Измените количество гостей' : '';
-    inputCapacityElement.setCustomValidity(guestsCheck);
-
-    inputCapacityElement.children[0].setAttribute('disabled', '');
-    inputCapacityElement.children[1].setAttribute('disabled', '');
-    inputCapacityElement.children[2].removeAttribute('disabled');
-    inputCapacityElement.children[3].setAttribute('disabled', '');
-  }
-
-  if (inputRoomNumberElement[1].selected) {
-    guestsCheck = inputCapacityElement.value === '0' || '3' ? 'Измените количество гостей' : '';
-    inputCapacityElement.setCustomValidity(guestsCheck);
-
-    inputCapacityElement.children[0].setAttribute('disabled', '');
-    inputCapacityElement.children[1].removeAttribute('disabled');
-    inputCapacityElement.children[2].removeAttribute('disabled');
-    inputCapacityElement.children[3].setAttribute('disabled', '');
-  }
-
-  if (inputRoomNumberElement[2].selected) {
-    guestsCheck = inputCapacityElement.value === '0' ? 'Измените количество гостей' : '';
-    inputCapacityElement.setCustomValidity(guestsCheck);
-
-    inputCapacityElement.children[0].removeAttribute('disabled');
-    inputCapacityElement.children[1].removeAttribute('disabled');
-    inputCapacityElement.children[2].removeAttribute('disabled');
-    inputCapacityElement.children[3].setAttribute('disabled', '');
-  }
-
-  if (inputRoomNumberElement[3].selected) {
-    guestsCheck = inputCapacityElement.value === '1' || '2' || '3' ? 'Измените количество гостей' : '';
-    inputCapacityElement.setCustomValidity(guestsCheck);
-
-    inputCapacityElement.children[0].setAttribute('disabled', '');
-    inputCapacityElement.children[1].setAttribute('disabled', '');
-    inputCapacityElement.children[2].setAttribute('disabled', '');
-    inputCapacityElement.children[3].removeAttribute('disabled');
-  }
-};
+fieldTypeElement.addEventListener('change', onFieldTypeChange);
+fieldTimeInElement.addEventListener('change', onFieldTimeInChange);
+fieldTimeOutElement.addEventListener('change', onFieldTimeOutChange);
+fieldRoomNumberElement.addEventListener('change', onFieldRoomNumberChange);

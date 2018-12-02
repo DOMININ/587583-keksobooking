@@ -67,6 +67,8 @@ var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y 
 
 var KEYCODE_ESC = 27;
 
+var ERROR_CAPACITY_MESSAGE = 'Измените значение поля';
+
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -315,7 +317,7 @@ var onFieldTimeOutChange = function (evt) {
   fieldTimeInElement.value = evt.target.value;
 };
 
-var mapRoomNumberToCapacity = {
+var validationMapCapacity = {
   '1': ['1'],
   '2': ['2', '1'],
   '3': ['3', '2', '1'],
@@ -324,10 +326,10 @@ var mapRoomNumberToCapacity = {
 
 var onFieldRoomNumberChange = function (evt) {
   var roomNumberValue = evt.target.value;
-  var capacityValue = mapRoomNumberToCapacity[roomNumberValue];
+  var capacityValues = validationMapCapacity[roomNumberValue];
 
   Array.prototype.forEach.call(fieldCapacityElement.options, function (optionElement) {
-    if (capacityValue.indexOf(optionElement.value) === -1) {
+    if (capacityValues.indexOf(optionElement.value) === -1) {
       optionElement.setAttribute('disabled', '');
     } else {
       optionElement.removeAttribute('disabled');
@@ -335,10 +337,20 @@ var onFieldRoomNumberChange = function (evt) {
   });
 };
 
-var onFormSubmitSuccess = function () {
-  var mainElement = document.querySelector('main');
-  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
+var onFormChange = function () {
+  var fieldRoomNumberValue = fieldRoomNumberElement.value;
+  var fieldCapacityValue = fieldCapacityElement.value;
+  var capacityValues = validationMapCapacity[fieldRoomNumberValue];
+  if (capacityValues.indexOf(fieldCapacityValue) === -1) {
+    fieldCapacityElement.setCustomValidity(ERROR_CAPACITY_MESSAGE);
+  } else {
+    fieldCapacityElement.setCustomValidity('');
+  }
+};
+
+var onFormSubmitSuccess = function (evt) {
   mainElement.appendChild(popupSuccessElement);
+  evt.preventDefault();
 };
 
 var formElement = document.querySelector('.ad-form');
@@ -354,6 +366,9 @@ var fieldPriceElement = document.querySelector('#price');
 var fieldRoomNumberElement = document.querySelector('#room_number');
 var fieldCapacityElement = document.querySelector('#capacity');
 
+var mainElement = document.querySelector('main');
+var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
+
 formFieldsetElements.forEach(addDisableAttribute);
 formSelectElements.forEach(addDisableAttribute);
 
@@ -368,6 +383,7 @@ var pinMainElement = document.querySelector('.map__pin--main');
 var offers = createOffers();
 
 formElement.addEventListener('submit', onFormSubmitSuccess);
+formElement.addEventListener('change', onFormChange);
 pinMainElement.addEventListener('click', onPinMainClick);
 fieldTypeElement.addEventListener('change', onFieldTypeChange);
 fieldTimeInElement.addEventListener('change', onFieldTimeInChange);

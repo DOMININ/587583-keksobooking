@@ -67,6 +67,8 @@ var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y 
 
 var KEYCODE_ESC = 27;
 
+var ERROR_CAPACITY_MESSAGE = 'Измените значение поля';
+
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -340,7 +342,7 @@ var onFormChange = function () {
   var fieldCapacityValue = fieldCapacityElement.value;
   var capacityValues = validationMapCapacity[fieldRoomNumberValue];
   if (capacityValues.indexOf(fieldCapacityValue) === -1) {
-    fieldCapacityElement.setCustomValidity('Измените значение поля');
+    fieldCapacityElement.setCustomValidity(ERROR_CAPACITY_MESSAGE);
   } else {
     fieldCapacityElement.setCustomValidity('');
   }

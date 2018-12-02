@@ -324,15 +324,24 @@ var mapRoomNumberToCapacity = {
 
 var onFieldRoomNumberChange = function (evt) {
   var roomNumberValue = evt.target.value;
-  var capacityValue = mapRoomNumberToCapacity[roomNumberValue];
+  var capacityValues = mapRoomNumberToCapacity[roomNumberValue];
 
   Array.prototype.forEach.call(fieldCapacityElement.options, function (optionElement) {
-    if (capacityValue.indexOf(optionElement.value) === -1) {
+    if (capacityValues.indexOf(optionElement.value) === -1) {
       optionElement.setAttribute('disabled', '');
     } else {
       optionElement.removeAttribute('disabled');
     }
   });
+};
+
+var onFormChange = function () {
+  var fieldRoomNumberValue = fieldRoomNumberElement.value;
+  var fieldCapacityValue = fieldCapacityElement.value;
+  var capacityValues = mapRoomNumberToCapacity[fieldRoomNumberValue];
+  if (capacityValues.indexOf(fieldCapacityValue) === -1) {
+    fieldCapacityElement.setCustomValidity('Измените тип поля');
+  }
 };
 
 var onFormSubmitSuccess = function (evt) {
@@ -369,6 +378,7 @@ var pinMainElement = document.querySelector('.map__pin--main');
 var offers = createOffers();
 
 formElement.addEventListener('submit', onFormSubmitSuccess);
+formElement.addEventListener('change', onFormChange);
 pinMainElement.addEventListener('click', onPinMainClick);
 fieldTypeElement.addEventListener('change', onFieldTypeChange);
 fieldTimeInElement.addEventListener('change', onFieldTimeInChange);

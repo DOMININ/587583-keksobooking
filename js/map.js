@@ -2,9 +2,9 @@
 
 var CARD_AVATAR_PATH = 'img/avatars/user0{index}.png';
 
-var TEXT_CAPACITY_TEXT = '{rooms} комнаты для {guests} гостей';
-var TEXT_TIME_TEXT = 'Заезд после {checkin}, выезд до {checkout}';
-var TEXT_NIGHT_PRICE = '?/ночь';
+var TEXT_CAPACITY = '{rooms} комнаты для {guests} гостей';
+var TEXT_TIME = 'Заезд после {checkin}, выезд до {checkout}';
+var TEXT_PRICE = '?/ночь';
 var TEXT_ERROR_CAPACITY = 'Измените значение поля';
 
 var PIN_WIDTH = 50;
@@ -86,11 +86,11 @@ var createAvatarUrl = function (index) {
 };
 
 var createCapacityText = function (offer) {
-  return TEXT_CAPACITY_TEXT.replace('{rooms}', offer.rooms).replace('{guests}', offer.guests);
+  return TEXT_CAPACITY.replace('{rooms}', offer.rooms).replace('{guests}', offer.guests);
 };
 
 var createTimeText = function (offer) {
-  return TEXT_TIME_TEXT.replace('{checkin}', offer.checkin).replace('{checkout}', offer.checkout);
+  return TEXT_TIME.replace('{checkin}', offer.checkin).replace('{checkout}', offer.checkout);
 };
 
 var getAndDeleteRandomItem = function (array) {
@@ -266,7 +266,7 @@ var createCardElement = function (data) {
 
   cardElement.querySelector('.popup__title').textContent = offer.title;
   cardElement.querySelector('.popup__text--address').textContent = offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = offer.price + TEXT_NIGHT_PRICE;
+  cardElement.querySelector('.popup__text--price').textContent = offer.price + TEXT_PRICE;
   cardElement.querySelector('.popup__type').textContent = offer.type;
   cardElement.querySelector('.popup__text--capacity').textContent = createCapacityText(offer);
   cardElement.querySelector('.popup__text--time').textContent = createTimeText(offer);
@@ -321,10 +321,10 @@ var onFieldTimeOutChange = function (evt) {
 
 var onFieldRoomNumberChange = function (evt) {
   var roomNumberValue = evt.target.value;
-  var capacityValue = VALIDATION_CAPACITY_MAP[roomNumberValue];
+  var capacityValues = VALIDATION_CAPACITY_MAP[roomNumberValue];
 
   Array.prototype.forEach.call(fieldCapacityElement.options, function (optionElement) {
-    if (capacityValue.indexOf(optionElement.value) === -1) {
+    if (capacityValues.indexOf(optionElement.value) === -1) {
       optionElement.setAttribute('disabled', '');
     } else {
       optionElement.removeAttribute('disabled');
@@ -335,7 +335,7 @@ var onFieldRoomNumberChange = function (evt) {
 var onFormChange = function () {
   var fieldRoomNumberValue = fieldRoomNumberElement.value;
   var fieldCapacityValue = fieldCapacityElement.value;
-  var capacityValues = VALIDATION_CAPACITY_MAP[fieldRoomNumberValue];  
+  var capacityValues = VALIDATION_CAPACITY_MAP[fieldRoomNumberValue];
   var validityMessage = capacityValues.indexOf(fieldCapacityValue) === -1 ? TEXT_ERROR_CAPACITY : '';
 
   fieldCapacityElement.setCustomValidity(validityMessage);

@@ -2,10 +2,10 @@
 
 var CARD_AVATAR_PATH = 'img/avatars/user0{index}.png';
 
-var CAPACITY_TEXT = '{rooms} комнаты для {guests} гостей';
-var TIME_TEXT = 'Заезд после {checkin}, выезд до {checkout}';
-
-var NIGHT_PRICE = '₽/ночь';
+var TEXT_CAPACITY = '{rooms} комнаты для {guests} гостей';
+var TEXT_TIME = 'Заезд после {checkin}, выезд до {checkout}';
+var TEXT_PRICE = '?/ночь';
+var TEXT_ERROR_CAPACITY = 'Измените значение поля';
 
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
@@ -17,6 +17,7 @@ var PIN_MAIN_WIDTH = 62;
 var PIN_MAIN_HEIGHT = 84;
 var PIN_MAIN_X = 570;
 var PIN_MAIN_Y = 375;
+var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y + PIN_MAIN_HEIGHT);
 
 var GUESTS_MIN = 1;
 var GUESTS_MAX = 20;
@@ -25,10 +26,10 @@ var PRICE_MAX = 1000000;
 var ROOMS_MIN = 1;
 var ROOMS_MAX = 5;
 
-var OFFER_LIMIT = 8;
-
 var PICTURE_IMAGE_WIDTH = 45;
 var PICTURE_IMAGE_HEIGHT = 40;
+
+var OFFER_LIMIT = 8;
 
 var OFFER_HOUSES = [
   'Большая уютная квартира',
@@ -63,11 +64,14 @@ var OFFER_PRICES = {
   bungalo: '0'
 };
 
-var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y + PIN_MAIN_HEIGHT);
+var VALIDATION_CAPACITY_MAP = {
+  '1': ['1'],
+  '2': ['2', '1'],
+  '3': ['3', '2', '1'],
+  '100': ['0']
+};
 
 var KEYCODE_ESC = 27;
-
-var ERROR_CAPACITY_MESSAGE = 'Измените значение поля';
 
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -82,11 +86,11 @@ var createAvatarUrl = function (index) {
 };
 
 var createCapacityText = function (offer) {
-  return CAPACITY_TEXT.replace('{rooms}', offer.rooms).replace('{guests}', offer.guests);
+  return TEXT_CAPACITY.replace('{rooms}', offer.rooms).replace('{guests}', offer.guests);
 };
 
 var createTimeText = function (offer) {
-  return TIME_TEXT.replace('{checkin}', offer.checkin).replace('{checkout}', offer.checkout);
+  return TEXT_TIME.replace('{checkin}', offer.checkin).replace('{checkout}', offer.checkout);
 };
 
 var getAndDeleteRandomItem = function (array) {
@@ -216,7 +220,6 @@ var removeCardElement = function () {
   }
 };
 
-
 var createCardFeaturesFragment = function (features) {
   var fragment = document.createDocumentFragment();
 
@@ -263,7 +266,7 @@ var createCardElement = function (data) {
 
   cardElement.querySelector('.popup__title').textContent = offer.title;
   cardElement.querySelector('.popup__text--address').textContent = offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = offer.price + NIGHT_PRICE;
+  cardElement.querySelector('.popup__text--price').textContent = offer.price + TEXT_PRICE;
   cardElement.querySelector('.popup__type').textContent = offer.type;
   cardElement.querySelector('.popup__text--capacity').textContent = createCapacityText(offer);
   cardElement.querySelector('.popup__text--time').textContent = createTimeText(offer);
@@ -281,6 +284,10 @@ var createCardElement = function (data) {
   return cardElement;
 };
 
+var addDisableAttribute = function (element) {
+  element.setAttribute('disabled', '');
+};
+
 var removeDisableAttribute = function (element) {
   element.removeAttribute('disabled');
 };
@@ -290,16 +297,11 @@ var onPinMainClick = function () {
   formFieldsetElements.forEach(removeDisableAttribute);
   formSelectElements.forEach(removeDisableAttribute);
 
-  fieldAddressElement.value = PIN_DEFAULT_LOCATION;
   mapElement.classList.remove('map--faded');
 
   pinsElement.appendChild(createPinElements(offers));
 
   pinMainElement.removeEventListener('click', onPinMainClick);
-};
-
-var addDisableAttribute = function (element) {
-  element.setAttribute('disabled', '');
 };
 
 var onFieldTypeChange = function (evt) {
@@ -317,16 +319,9 @@ var onFieldTimeOutChange = function (evt) {
   fieldTimeInElement.value = evt.target.value;
 };
 
-var validationMapCapacity = {
-  '1': ['1'],
-  '2': ['2', '1'],
-  '3': ['3', '2', '1'],
-  '100': ['0']
-};
-
 var onFieldRoomNumberChange = function (evt) {
   var roomNumberValue = evt.target.value;
-  var capacityValues = validationMapCapacity[roomNumberValue];
+  var capacityValues = VALIDATION_CAPACITY_MAP[roomNumberValue];
 
   Array.prototype.forEach.call(fieldCapacityElement.options, function (optionElement) {
     if (capacityValues.indexOf(optionElement.value) === -1) {
@@ -340,22 +335,60 @@ var onFieldRoomNumberChange = function (evt) {
 var onFormChange = function () {
   var fieldRoomNumberValue = fieldRoomNumberElement.value;
   var fieldCapacityValue = fieldCapacityElement.value;
-  var capacityValues = validationMapCapacity[fieldRoomNumberValue];
-  if (capacityValues.indexOf(fieldCapacityValue) === -1) {
-    fieldCapacityElement.setCustomValidity(ERROR_CAPACITY_MESSAGE);
-  } else {
-    fieldCapacityElement.setCustomValidity('');
-  }
+  var capacityValues = VALIDATION_CAPACITY_MAP[fieldRoomNumberValue];
+  var validityMessage = capacityValues.indexOf(fieldCapacityValue) === -1 ? TEXT_ERROR_CAPACITY : '';
+
+  fieldCapacityElement.setCustomValidity(validityMessage);
 };
 
-var onFormSubmitSuccess = function (evt) {
+var onFormSubmitSuccess = function () {
+  var mainElement = document.querySelector('main');
+  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
   mainElement.appendChild(popupSuccessElement);
-  evt.preventDefault();
+};
+
+var onPinMainMouseDown = function (mouseDownEvt) {
+  mouseDownEvt.preventDefault();
+
+  var startCoords = {
+    x: mouseDownEvt.clientX,
+    y: mouseDownEvt.clientY
+  };
+
+  var onDocumentMouseMove = function (mouseMoveEvt) {
+    mouseMoveEvt.preventDefault();
+
+    var shiftCoords = {
+      x: startCoords.x - mouseMoveEvt.clientX,
+      y: startCoords.y - mouseMoveEvt.clientY
+    };
+
+    startCoords = {
+      x: mouseMoveEvt.clientX,
+      y: mouseMoveEvt.clientY
+    };
+
+    var y = pinMainElement.offsetTop - shiftCoords.y;
+    var x = pinMainElement.offsetLeft - shiftCoords.x;
+
+    pinMainElement.style.top = Math.max(PIN_MIN_Y - PIN_MAIN_HEIGHT, Math.min(y, PIN_MAX_Y - PIN_MAIN_HEIGHT)) + 'px';
+    pinMainElement.style.left = Math.max(PIN_MIN_X, Math.min(x, PIN_MAX_X - PIN_MAIN_WIDTH)) + 'px';
+    fieldAddressElement.value = (parseInt(pinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2) + ', ' + (parseInt(pinMainElement.style.top, 10) + PIN_MAIN_HEIGHT);
+  };
+
+  var onDocumentMouseUp = function (mouseUpEvt) {
+    mouseUpEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+  };
+
+  document.addEventListener('mousemove', onDocumentMouseMove);
+  document.addEventListener('mouseup', onDocumentMouseUp);
 };
 
 var formElement = document.querySelector('.ad-form');
 var formFieldsetElements = document.querySelectorAll('fieldset');
-
 var formSelectElements = document.querySelectorAll('select');
 
 var fieldAddressElement = document.querySelector('#address');
@@ -366,8 +399,7 @@ var fieldPriceElement = document.querySelector('#price');
 var fieldRoomNumberElement = document.querySelector('#room_number');
 var fieldCapacityElement = document.querySelector('#capacity');
 
-var mainElement = document.querySelector('main');
-var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
+fieldAddressElement.value = PIN_DEFAULT_LOCATION;
 
 formFieldsetElements.forEach(addDisableAttribute);
 formSelectElements.forEach(addDisableAttribute);
@@ -382,9 +414,11 @@ var pinMainElement = document.querySelector('.map__pin--main');
 
 var offers = createOffers();
 
+pinMainElement.addEventListener('click', onPinMainClick);
+pinMainElement.addEventListener('mousedown', onPinMainMouseDown);
+
 formElement.addEventListener('submit', onFormSubmitSuccess);
 formElement.addEventListener('change', onFormChange);
-pinMainElement.addEventListener('click', onPinMainClick);
 fieldTypeElement.addEventListener('change', onFieldTypeChange);
 fieldTimeInElement.addEventListener('change', onFieldTimeInChange);
 fieldTimeOutElement.addEventListener('change', onFieldTimeOutChange);

@@ -54,12 +54,6 @@
     fieldCapacityElement.setCustomValidity(validityMessage);
   };
 
-  var onFormSubmitSuccess = function () {
-    var mainElement = document.querySelector('main');
-    var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
-    mainElement.appendChild(popupSuccessElement);
-  };
-
   var formElement = document.querySelector('.ad-form');
 
   var fieldTimeInElement = document.querySelector('#timein');
@@ -71,7 +65,6 @@
 
   window.form = {
     activate: function () {
-      formElement.addEventListener('submit', onFormSubmitSuccess);
       formElement.addEventListener('change', onFormChange);
       fieldTypeElement.addEventListener('change', onFieldTypeChange);
       fieldTimeInElement.addEventListener('change', onFieldTimeInChange);
@@ -79,7 +72,11 @@
       fieldRoomNumberElement.addEventListener('change', onFieldRoomNumberChange);
     },
     deactivate: function () {
-
+      formElement.removeEventListener('change', onFormChange);
+      fieldTypeElement.removeEventListener('change', onFieldTypeChange);
+      fieldTimeInElement.removeEventListener('change', onFieldTimeInChange);
+      fieldTimeOutElement.removeEventListener('change', onFieldTimeOutChange);
+      fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
     }
   };
 })();

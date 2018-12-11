@@ -250,18 +250,6 @@ var onPinMainMouseDown = function (mouseDownEvt) {
   document.addEventListener('mouseup', onDocumentMouseUp);
 };
 
-window.createOffers = function () {
-  var offers = [];
-
-  window.backend.load(function (pins) {
-    for (var i = 0; i < pins.length; i++) {
-      offers.push(pins[i]);
-    }
-  });
-
-  return offers;
-};
-
 var formElement = document.querySelector('.ad-form');
 var formFieldsetElements = document.querySelectorAll('fieldset');
 var formSelectElements = document.querySelectorAll('select');
@@ -281,7 +269,10 @@ var pinsElement = document.querySelector('.map__pins');
 var pinTemplateElement = document.querySelector('#pin').content.querySelector('button');
 var pinMainElement = document.querySelector('.map__pin--main');
 
-var offers = window.createOffers();
+var offers;
+window.backend.load(function (loadedOffers) {
+  offers = loadedOffers;
+});
 
 pinMainElement.addEventListener('click', onPinMainClick);
 pinMainElement.addEventListener('mousedown', onPinMainMouseDown);

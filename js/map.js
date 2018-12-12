@@ -7,17 +7,8 @@ var TEXT_PRICE = '?/ночь';
 var PICTURE_IMAGE_WIDTH = 45;
 var PICTURE_IMAGE_HEIGHT = 40;
 
-var PIN_MIN_X = 0;
-var PIN_MAX_X = 1200;
-var PIN_MIN_Y = 130;
-var PIN_MAX_Y = 630;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var PIN_MAIN_WIDTH = 62;
-var PIN_MAIN_HEIGHT = 84;
-var PIN_MAIN_X = 570;
-var PIN_MAIN_Y = 375;
-var PIN_DEFAULT_LOCATION = PIN_MAIN_X + PIN_MAIN_WIDTH / 2 + ', ' + (PIN_MAIN_Y + PIN_MAIN_HEIGHT);
 
 var OFFER_TEXT_TITLE = 'заголовок объявления';
 
@@ -155,111 +146,14 @@ var createCardElement = function (data) {
   return cardElement;
 };
 
-var addDisableAttribute = function (element) {
-  element.setAttribute('disabled', '');
-};
-
-var removeDisableAttribute = function (element) {
-  element.removeAttribute('disabled');
-};
-
-var onFormError = function () {
-  var mainElement = document.querySelector('main');
-  var popupErrorElement = document.querySelector('#error').content.querySelector('.error');
-  mainElement.appendChild(popupErrorElement);
-};
-
-var onFormSuccess = function () {
-  var mainElement = document.querySelector('main');
-  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
-  mainElement.appendChild(popupSuccessElement);
-};
-
-var formDeactivate = function () {
-  formElement.classList.add('ad-form--disabled');
-  mapElement.classList.add('map--faded');
-
-  pinMainElement.style.top = PIN_MAIN_Y + 'px';
-  pinMainElement.style.left = PIN_MAIN_X + 'px';
-
-  var formData = new FormData(formElement);
-  window.backend.upload(onFormSuccess, onFormError, formData);
-
-  window.form.deactivate();
-  formElement.reset();
-
-  fieldAddressElement.value = PIN_DEFAULT_LOCATION;
-};
-
 var onPinMainClick = function () {
-  formElement.classList.remove('ad-form--disabled');
-  formFieldsetElements.forEach(removeDisableAttribute);
-  formSelectElements.forEach(removeDisableAttribute);
-
   mapElement.classList.remove('map--faded');
 
   pinsElement.appendChild(createPinElements(offers));
-
   pinMainElement.removeEventListener('click', onPinMainClick);
 
   window.form.activate();
-
-  formElement.addEventListener('submit', function (evt) {
-    formDeactivate();
-    evt.preventDefault();
-  });
 };
-
-var onPinMainMouseDown = function (mouseDownEvt) {
-  mouseDownEvt.preventDefault();
-
-  var startCoords = {
-    x: mouseDownEvt.clientX,
-    y: mouseDownEvt.clientY
-  };
-
-  var onDocumentMouseMove = function (mouseMoveEvt) {
-    mouseMoveEvt.preventDefault();
-
-    var shiftCoords = {
-      x: startCoords.x - mouseMoveEvt.clientX,
-      y: startCoords.y - mouseMoveEvt.clientY
-    };
-
-    startCoords = {
-      x: mouseMoveEvt.clientX,
-      y: mouseMoveEvt.clientY
-    };
-
-    var y = pinMainElement.offsetTop - shiftCoords.y;
-    var x = pinMainElement.offsetLeft - shiftCoords.x;
-
-    pinMainElement.style.top = Math.max(PIN_MIN_Y - PIN_MAIN_HEIGHT, Math.min(y, PIN_MAX_Y - PIN_MAIN_HEIGHT)) + 'px';
-    pinMainElement.style.left = Math.max(PIN_MIN_X, Math.min(x, PIN_MAX_X - PIN_MAIN_WIDTH)) + 'px';
-    fieldAddressElement.value = (parseInt(pinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2) + ', ' + (parseInt(pinMainElement.style.top, 10) + PIN_MAIN_HEIGHT);
-  };
-
-  var onDocumentMouseUp = function (mouseUpEvt) {
-    mouseUpEvt.preventDefault();
-
-    document.removeEventListener('mousemove', onDocumentMouseMove);
-    document.removeEventListener('mouseup', onDocumentMouseUp);
-  };
-
-  document.addEventListener('mousemove', onDocumentMouseMove);
-  document.addEventListener('mouseup', onDocumentMouseUp);
-};
-
-var formElement = document.querySelector('.ad-form');
-var formFieldsetElements = document.querySelectorAll('fieldset');
-var formSelectElements = document.querySelectorAll('select');
-
-var fieldAddressElement = document.querySelector('#address');
-
-fieldAddressElement.value = PIN_DEFAULT_LOCATION;
-
-formFieldsetElements.forEach(addDisableAttribute);
-formSelectElements.forEach(addDisableAttribute);
 
 var mapElement = document.querySelector('.map');
 var mapFiltersElement = document.querySelector('.map__filters-container');
@@ -270,9 +164,12 @@ var pinTemplateElement = document.querySelector('#pin').content.querySelector('b
 var pinMainElement = document.querySelector('.map__pin--main');
 
 var offers;
+
+window.form.setAddressFieldValue();
+
 window.backend.load(function (loadedOffers) {
   offers = loadedOffers;
-});
 
-pinMainElement.addEventListener('click', onPinMainClick);
-pinMainElement.addEventListener('mousedown', onPinMainMouseDown);
+  pinMainElement.addEventListener('click', onPinMainClick);
+  pinMainElement.addEventListener('mousedown', window.pinMain.onPinMainMouseDown());
+});

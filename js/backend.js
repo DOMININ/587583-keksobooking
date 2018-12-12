@@ -2,11 +2,9 @@
 
 (function () {
   var METHOD_GET = 'GET';
-  var URL_GET = 'https://js.dump.academy/keksobooking/data';
-
   var METHOD_POST = 'POST';
+  var URL_GET = 'https://js.dump.academy/keksobooking/data';
   var URL_POST = 'https://js.dump.academy/keksobooking';
-
   var TEXT_ERROR_STATUS = 'Cтатус ответа: {status} {statusText}';
   var TEXT_ERROR = 'Произошла ошибка соединения';
   var TEXT_TIMEOUT = 'Запрос не успел выполниться за {timeout} мс';
@@ -16,7 +14,7 @@
 
   var RESPONSE_TYPE = 'json';
 
-  var receiveData = function (method, url, onLoad, onError) {
+  var createRequest = function (method, url, onLoad, onError, data) {
     var xhr = new XMLHttpRequest();
 
     xhr.responseType = RESPONSE_TYPE;
@@ -40,16 +38,17 @@
     xhr.timeout = TIMEOUT_TIME;
 
     xhr.open(method, url);
+    xhr.send(data);
 
     return xhr;
   };
 
   window.backend = {
     load: function (onLoad, onError) {
-      receiveData(METHOD_GET, URL_GET, onLoad, onError).send();
+      createRequest(METHOD_GET, URL_GET, onLoad, onError);
     },
     upload: function (onLoad, onError, data) {
-      receiveData(METHOD_POST, URL_POST, onLoad, onError).send(data);
+      createRequest(METHOD_POST, URL_POST, onLoad, onError, data);
     }
   };
 })();

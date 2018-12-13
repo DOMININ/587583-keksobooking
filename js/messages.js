@@ -12,12 +12,27 @@
 */
 
 (function () {
+  var KEYCODE_ESC = 27;
+
   window.messages = {
     createSuccessMessage: function () {
+      var onPopupEscKeydown = function (evt) {
+        if (evt.keyCode === KEYCODE_ESC) {
+          mainElement.removeChild(popupSuccessElement);
+        }
+      };
+
+      var onPopupClick = function () {
+        mainElement.removeChild(popupSuccessElement);
+      };
+
       var mainElement = document.querySelector('main');
       var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
 
       mainElement.appendChild(popupSuccessElement);
+
+      document.addEventListener('keydown', onPopupEscKeydown);
+      document.addEventListener('click', onPopupClick);
     },
     createErrorMessage: function () {
       var mainElement = document.querySelector('main');

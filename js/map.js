@@ -171,5 +171,5 @@ window.backend.load(function (loadedOffers) {
   offers = loadedOffers;
 
   pinMainElement.addEventListener('click', onPinMainClick);
-  pinMainElement.addEventListener('mousedown', window.pinMain.onPinMainMouseDown());
+  pinMainElement.addEventListener('mousedown', window.pinMain.onPinMainMouseDown);
 });

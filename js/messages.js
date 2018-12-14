@@ -1,44 +1,62 @@
 'use strict';
 
-// 1. extract selectors
-// 2. setTimeout remove dom elemnt
-
 /*
-3.3. При успешной отправке формы, форма редактирования изображения закрывается, все данные, введённые в форму и контрол фильтра, приходят в исходное состояние. Поле загрузки фотографии, стилизованное под букву «О» в логотипе, очищается.
+На экран выводится сообщение об успешной отправке данных. Разметку сообщения, которая находится
+блоке #success внутри шаблона template, нужно разместить в main. Сообщение должно исчезать по нажатию
+на клавишу Esc и по клику на произвольную область экрана.
 
-На экран выводится сообщение об успешной загрузке изображения. Разметку сообщения, которая находится блоке #success внутри шаблона template, нужно разместить в main. Сообщение должно исчезать после нажатия на кнопку .success__button, по нажатию на клавишу Esc и по клику на произвольную область экрана.
-
-3.4. Если при отправке данных произошла ошибка запроса, нужно показать соответствующее сообщение. Разметку сообщения, которая находится блоке #error внутри шаблона template, нужно разместить в main. Сообщение должно исчезать после нажатия на кнопки .error__button, по нажатию на клавишу Esc и по клику на произвольную область экрана.
+1.6. Если при отправке данных произошла ошибка запроса, показывается соответствующее сообщение. Разметку сообщения,
+которая находится в блоке #error в шаблоне template, нужно разместить в main. Сообщение должно исчезать после нажатия на
+кнопку .error__button, по нажатию на клавишу Esc и по клику на произвольную область экрана.
 */
 
 (function () {
   var KEYCODE_ESC = 27;
 
+  var mainElement = document.querySelector('main');
+  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
+  var popupErrorElement = document.querySelector('#error').content.querySelector('.error');
+
+  var onPopupSuccessEscKeydown = function (evt) {
+    if (evt.keyCode === KEYCODE_ESC) {
+      mainElement.removeChild(popupSuccessElement);
+      document.removeEventListener('click', onPopupSuccessClick);
+      document.removeEventListener('keydown', onPopupSuccessEscKeydown);
+    }
+  };
+
+  var onPopupErrorEscKeydown = function (evt) {
+    if (evt.keyCode === KEYCODE_ESC) {
+      mainElement.removeChild(popupErrorElement);
+      document.removeEventListener('click', onPopupSuccessClick);
+      document.removeEventListener('keydown', onPopupSuccessEscKeydown);
+    }
+  };
+
+  var onPopupSuccessClick = function () {
+    mainElement.removeChild(popupSuccessElement);
+    document.removeEventListener('click', onPopupSuccessClick);
+    document.removeEventListener('keydown', onPopupSuccessEscKeydown);
+  };
+
+  var onPopupErrorClick = function () {
+    mainElement.removeChild(popupErrorElement);
+    document.removeEventListener('click', onPopupSuccessClick);
+    document.removeEventListener('keydown', onPopupSuccessEscKeydown);
+  };
+
   window.messages = {
     createSuccessMessage: function () {
-      var onPopupEscKeydown = function (evt) {
-        if (evt.keyCode === KEYCODE_ESC) {
-          mainElement.removeChild(popupSuccessElement);
-        }
-      };
-
-      var onPopupClick = function () {
-        mainElement.removeChild(popupSuccessElement);
-      };
-
-      var mainElement = document.querySelector('main');
-      var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
-
       mainElement.appendChild(popupSuccessElement);
 
-      document.addEventListener('keydown', onPopupEscKeydown);
-      document.addEventListener('click', onPopupClick);
+      document.addEventListener('click', onPopupSuccessClick);
+      document.addEventListener('keydown', onPopupSuccessEscKeydown);
     },
     createErrorMessage: function () {
-      var mainElement = document.querySelector('main');
-      var popupErrorElement = document.querySelector('#error').content.querySelector('.error');
-
       mainElement.appendChild(popupErrorElement);
+
+      document.addEventListener('click', onPopupErrorClick);
+      document.addEventListener('keydown', onPopupErrorEscKeydown);
     }
   };
 })();

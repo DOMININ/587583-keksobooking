@@ -3,14 +3,13 @@
 var TEXT_CAPACITY = '{rooms} комнаты для {guests} гостей';
 var TEXT_TIME = 'Заезд после {checkin}, выезд до {checkout}';
 var TEXT_PRICE = '?/ночь';
+var TEXT_OFFER_TITLE = 'заголовок объявления'; // @TODO rename
 
 var PICTURE_IMAGE_WIDTH = 45;
 var PICTURE_IMAGE_HEIGHT = 40;
 
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-
-var OFFER_TEXT_TITLE = 'заголовок объявления';
 
 var KEYCODE_ESC = 27;
 
@@ -29,7 +28,7 @@ var createPinElement = function (data) {
   element.style.top = data.location.y - PIN_HEIGHT + 'px';
 
   element.querySelector('img').src = data.author.avatar;
-  element.querySelector('img').alt = OFFER_TEXT_TITLE;
+  element.querySelector('img').alt = TEXT_OFFER_TITLE;
 
   var handleClick = function () {
     removeCard();
@@ -146,30 +145,31 @@ var createCardElement = function (data) {
   return cardElement;
 };
 
-var onPinMainClick = function () {
-  mapElement.classList.remove('map--faded');
-
-  pinsElement.appendChild(createPinElements(offers));
-  pinMainElement.removeEventListener('click', onPinMainClick);
-
-  window.form.activate();
-};
-
 var mapElement = document.querySelector('.map');
 var mapFiltersElement = document.querySelector('.map__filters-container');
 var cardElement = document.querySelector('#card').cloneNode(true);
 var cardTemplateElement = cardElement.content.querySelector('.map__card');
 var pinsElement = document.querySelector('.map__pins');
 var pinTemplateElement = document.querySelector('#pin').content.querySelector('button');
-var pinMainElement = document.querySelector('.map__pin--main');
 
 var offers;
 
-window.form.setAddressFieldValue();
+window.form.setAddressFieldValue(window.pinMain.getPositionX(), window.pinMain.getPositionY());
+
+window.map = {
+  activate: function () {
+    mapElement.classList.remove('map--faded');
+    pinsElement.appendChild(createPinElements(offers));
+  },
+  deactivate: function () {
+    mapElement.classList.add('map--faded');
+    window.pinMain.deactivate();
+    window.form.setAddressFieldValue(window.pinMain.getPositionX(), window.pinMain.getPositionY());
+    // @NOTICE: check pins deleting
+  },
+};
 
 window.backend.load(function (loadedOffers) {
   offers = loadedOffers;
-
-  pinMainElement.addEventListener('click', onPinMainClick);
-  pinMainElement.addEventListener('mousedown', window.pinMain.onPinMainMouseDown);
+  window.pinMain.activate();
 });

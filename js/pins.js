@@ -38,10 +38,10 @@
       return fragment;
     },
     remove: function () {
-      var pinElement = document.querySelectorAll('.map__pin');
-      for (var i = 1; pinElement.length - 1; i++) {
-        pinElement[i].remove();
-      }
+      var pinElement = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+      pinElement.forEach(function (pin) {
+        pin.remove();
+      });
     }
   };
 })();

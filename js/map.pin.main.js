@@ -16,7 +16,7 @@
   var onPinMainMouseDown = function (mouseDownEvt) {
     mouseDownEvt.preventDefault();
 
-    window.form.setAddressFieldValue(window.pinMain.getPositionX(), window.pinMain.getPositionY());
+    window.form.syncAddressField();
 
     var startCoords = {
       x: mouseDownEvt.clientX,
@@ -42,7 +42,7 @@
       pinMainElement.style.top = Math.max(PIN_MIN_Y - PIN_MAIN_HEIGHT, Math.min(y, PIN_MAX_Y - PIN_MAIN_HEIGHT)) + 'px';
       pinMainElement.style.left = Math.max(PIN_MIN_X, Math.min(x, PIN_MAX_X - PIN_MAIN_WIDTH)) + 'px';
 
-      window.form.setAddressFieldValue(window.pinMain.getPositionX(), window.pinMain.getPositionY());
+      window.form.syncAddressField();
     };
 
     var onDocumentMouseUp = function (mouseUpEvt) {
@@ -60,9 +60,14 @@
     window.messages.createErrorMessage();
   };
 
+  var resetPosition = function () {
+    pinMainElement.style.top = PIN_MAIN_Y + 'px';
+    pinMainElement.style.left = PIN_MAIN_X + 'px';
+  };
+
   var onFormSuccess = function () {
     window.messages.createSuccessMessage();
-    window.pinMain.resetPosition();
+    resetPosition();
     window.form.deactivate();
     window.map.deactivate();
   };
@@ -81,10 +86,6 @@
     },
     deactivate: function () {
       pinMainElement.addEventListener('click', onPinMainClick);
-    },
-    resetPosition: function () {
-      pinMainElement.style.top = PIN_MAIN_Y + 'px';
-      pinMainElement.style.left = PIN_MAIN_X + 'px';
     },
     getPositionX: function () {
       return parseInt(pinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2;

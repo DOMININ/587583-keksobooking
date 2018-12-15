@@ -113,8 +113,8 @@
       fieldTimeOutElement.removeEventListener('change', onFieldTimeOutChange);
       fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
     },
-    setAddressFieldValue: function (x, y) {
-      fieldAddressElement.value = x + ', ' + y;
+    syncAddressField: function () {
+      fieldAddressElement.value = window.pinMain.getPositionX() + ', ' + window.pinMain.getPositionY();
     }
   };
 })();

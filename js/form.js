@@ -82,9 +82,9 @@
 
 
   window.form = {
-    activate: function (onFormSuccess, onFormError) {
+    activate: function (onRequestSuccess, onRequestError) {
       onFormSubmit = function (evt) {
-        window.backend.upload(onFormSuccess, onFormError, new FormData(formElement));
+        window.backend.upload(onRequestSuccess, onRequestError, new FormData(formElement));
         evt.preventDefault();
       };
 

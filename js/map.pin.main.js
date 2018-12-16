@@ -56,7 +56,7 @@
     document.addEventListener('mouseup', onDocumentMouseUp);
   };
 
-  var onFormError = function () {
+  var onRequestError = function () {
     window.messages.createErrorMessage();
   };
 
@@ -65,7 +65,7 @@
     pinMainElement.style.left = PIN_MAIN_X + 'px';
   };
 
-  var onFormSuccess = function () {
+  var onRequestSuccess = function () {
     window.messages.createSuccessMessage();
     resetPosition();
     window.form.deactivate();
@@ -74,7 +74,7 @@
 
   var onPinMainClick = function () {
     window.map.activate();
-    window.form.activate(onFormSuccess, onFormError);
+    window.form.activate(onRequestSuccess, onRequestError);
 
     pinMainElement.removeEventListener('click', onPinMainClick);
   };

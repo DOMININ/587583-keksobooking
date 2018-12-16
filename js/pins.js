@@ -38,9 +38,9 @@
       return fragment;
     },
     remove: function () {
-      var pinElement = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-      pinElement.forEach(function (pin) {
-        pin.remove();
+      var pinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+      Array.prototype.forEach.call(pinElements, function (pinElement) {
+        pinElement.remove();
       });
     }
   };

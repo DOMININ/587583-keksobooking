@@ -20,6 +20,7 @@
   var onFieldTypeChange = function (evt) {
     var typeValue = evt.target.value;
     var priceValue = OFFER_PRICES[typeValue];
+
     fieldPriceElement.setAttribute('min', priceValue);
     fieldPriceElement.setAttribute('placeholder', priceValue);
   };
@@ -54,13 +55,11 @@
     fieldCapacityElement.setCustomValidity(validityMessage);
   };
 
-  var onFormSubmitSuccess = function () {
-    var mainElement = document.querySelector('main');
-    var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
-    mainElement.appendChild(popupSuccessElement);
-  };
+  var onFormSubmit;
 
   var formElement = document.querySelector('.ad-form');
+  var formFieldsetElements = document.querySelectorAll('fieldset');
+  var formSelectElements = document.querySelectorAll('select');
 
   var fieldTimeInElement = document.querySelector('#timein');
   var fieldTimeOutElement = document.querySelector('#timeout');
@@ -68,18 +67,54 @@
   var fieldPriceElement = document.querySelector('#price');
   var fieldRoomNumberElement = document.querySelector('#room_number');
   var fieldCapacityElement = document.querySelector('#capacity');
+  var fieldAddressElement = document.querySelector('#address');
+
+  var addDisableAttribute = function (element) {
+    element.setAttribute('disabled', '');
+  };
+
+  var removeDisableAttribute = function (element) {
+    element.removeAttribute('disabled');
+  };
+
+  formFieldsetElements.forEach(addDisableAttribute);
+  formSelectElements.forEach(addDisableAttribute);
+
 
   window.form = {
-    activate: function () {
-      formElement.addEventListener('submit', onFormSubmitSuccess);
+    activate: function (onRequestSuccess, onRequestError) {
+      onFormSubmit = function (evt) {
+        window.backend.upload(onRequestSuccess, onRequestError, new FormData(formElement));
+        evt.preventDefault();
+      };
+
+      formElement.classList.remove('ad-form--disabled');
+
+      formFieldsetElements.forEach(removeDisableAttribute);
+      formSelectElements.forEach(removeDisableAttribute);
+
       formElement.addEventListener('change', onFormChange);
       fieldTypeElement.addEventListener('change', onFieldTypeChange);
       fieldTimeInElement.addEventListener('change', onFieldTimeInChange);
       fieldTimeOutElement.addEventListener('change', onFieldTimeOutChange);
       fieldRoomNumberElement.addEventListener('change', onFieldRoomNumberChange);
+
+      formElement.addEventListener('submit', onFormSubmit);
     },
     deactivate: function () {
+      formElement.classList.add('ad-form--disabled');
 
+      formElement.reset();
+      formElement.removeEventListener('change', onFormChange);
+      formElement.removeEventListener('submit', onFormSubmit);
+
+      fieldTypeElement.removeEventListener('change', onFieldTypeChange);
+      fieldTimeInElement.removeEventListener('change', onFieldTimeInChange);
+      fieldTimeOutElement.removeEventListener('change', onFieldTimeOutChange);
+      fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
+    },
+    syncAddressField: function () {
+      fieldAddressElement.value = window.pinMain.getPositionX() + ', ' + window.pinMain.getPositionY();
     }
   };
 })();

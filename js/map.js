@@ -11,6 +11,7 @@ var mapElement = document.querySelector('.map');
 window.map = {
   activate: function () {
     mapElement.classList.remove('map--faded');
+    window.filter.activate(offers);
     pinsElement.appendChild(window.pins.create(offers));
   },
   deactivate: function () {
@@ -18,6 +19,8 @@ window.map = {
     window.pinMain.deactivate();
     window.form.syncAddressField();
     window.pins.remove();
+    window.cards.remove();
+    window.filter.deactivate();
   },
 };
 

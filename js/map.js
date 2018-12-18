@@ -1,7 +1,5 @@
 'use strict';
 
-var pinsElement = document.querySelector('.map__pins');
-
 var offers;
 
 window.form.syncAddressField();
@@ -11,8 +9,7 @@ var mapElement = document.querySelector('.map');
 window.map = {
   activate: function () {
     mapElement.classList.remove('map--faded');
-    window.filter.activate(offers);
-    pinsElement.appendChild(window.pins.create(offers));
+    window.pins.create(window.filter.activate(offers));
   },
   deactivate: function () {
     mapElement.classList.add('map--faded');

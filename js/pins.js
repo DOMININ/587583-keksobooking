@@ -3,16 +3,14 @@
 (function () {
   var TEXT_OFFER_TITLE = 'заголовок объявления';
 
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
-
+  var pinsElement = document.querySelector('.map__pins');
   var pinTemplateElement = document.querySelector('#pin').content.querySelector('button');
 
   var createPinElement = function (data) {
     var element = pinTemplateElement.cloneNode(true);
 
-    element.style.left = data.location.x - PIN_WIDTH / 2 + 'px';
-    element.style.top = data.location.y - PIN_HEIGHT + 'px';
+    element.style.left = data.location.x + 'px';
+    element.style.top = data.location.y + 'px';
 
     element.querySelector('img').src = data.author.avatar;
     element.querySelector('img').alt = TEXT_OFFER_TITLE;
@@ -35,7 +33,7 @@
         fragment.appendChild(createPinElement(offer));
       });
 
-      return fragment;
+      return pinsElement.appendChild(fragment);
     },
     remove: function () {
       var pinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');

@@ -1,12 +1,19 @@
 'use strict';
 
 var offers;
+var mapElement = document.querySelector('.map');
 
 window.form.syncAddressField();
 
-var mapElement = document.querySelector('.map');
+window.backend.load(function (loadedOffers) {
+  offers = loadedOffers;
+  window.pinMain.activate();
+});
 
 window.map = {
+  getOffers: function() {
+    return offers
+  },
   activate: function () {
     mapElement.classList.remove('map--faded');
     window.pins.create(window.filter.activate(offers));
@@ -20,8 +27,3 @@ window.map = {
     window.filter.deactivate();
   },
 };
-
-window.backend.load(function (loadedOffers) {
-  offers = loadedOffers;
-  window.pinMain.activate();
-});

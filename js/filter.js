@@ -1,27 +1,36 @@
 'use strict';
 
 (function () {
-  var houseTypeElement = document.querySelector('#housing-type');
-  var formFilterElement = document.querySelector('.map__filters');
+  var filterElement = document.querySelector('.map__filters');
+  var filterHousePriceElement = document.querySelector('#housing-price');
+  var filterHouseTypeElement = document.querySelector('#housing-type');
+  //
 
-  var onFilterTypeChange = function (evt) {
-    var typeValue = evt.target.value;
+  var filterMapFeaturesElement = document.querySelector('.map__features');
+
+
+  var filterOfferByHouseType = function(element, index, array) {
+    // offers.filter
+    return true
+  }
+  
+  var filterOffers = function(offers) {
+    return offers
+      .filter(filterOfferByHouseType)
+  }
+
+  var onFilterHouseTypeChange = function () {
+    window.pins.remove()
+    window.pins.create(filterOffers(window.map.getOffers())) // ?
   };
-
-  houseTypeElement.addEventListener('change', onFilterTypeChange);
 
   window.filter = {
     activate: function (offers) {
-      var houseType;
-      offers.forEach(function () {
-        houseType = offers.filter(function (offer) {
-          return offer.offer.type === houseTypeElement.value;
-        });
-      });
-      return houseType.length === 0 ? offers : houseType;
+      filterHouseTypeElement.addEventListener('change', onFilterHouseTypeChange);
     },
     deactivate: function () {
-      formFilterElement.reset();
+      filterHouseTypeElement.removeEventListener('change', onFilterHouseTypeChange);
+      filterElement.reset();
     }
   };
 })();

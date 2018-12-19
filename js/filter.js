@@ -13,7 +13,7 @@
   window.filter = {
     activate: function (offers) {
       var houseType;
-      Array.prototype.forEach.call(offers, function () {
+      offers.forEach(function () {
         houseType = offers.filter(function (offer) {
           return offer.offer.type === houseTypeElement.value;
         });

@@ -16,8 +16,8 @@
     element.querySelector('img').alt = TEXT_OFFER_TITLE;
 
     var handleClick = function () {
-      window.cards.remove();
-      window.cards.create(data);
+      window.card.remove();
+      window.card.create(data);
     };
 
     element.addEventListener('click', handleClick);

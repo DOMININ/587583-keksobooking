@@ -1,6 +1,6 @@
 'use strict';
 
-//(function () {
+(function () {
   var offers;
   var mapElement = document.querySelector('.map');
 
@@ -24,8 +24,8 @@
       window.pinMain.deactivate();
       window.form.syncAddressField();
       window.pins.remove();
-      window.cards.remove();
+      window.card.remove();
       window.filter.deactivate();
     }
   };
-//})();
+})();

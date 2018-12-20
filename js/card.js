@@ -120,7 +120,7 @@
   var cardElement = document.querySelector('#card').cloneNode(true);
   var cardTemplateElement = cardElement.content.querySelector('.map__card');
 
-  window.cards = {
+  window.card = {
     create: function (data) {
       mapElement.insertBefore(createCardElement(data), mapFiltersElement);
       document.addEventListener('keydown', onDocumentEscKeydown);

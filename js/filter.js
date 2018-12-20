@@ -1,13 +1,16 @@
 'use strict';
 
 (function () {
+  var PINS_MIN = 0;
+  var PINS_MAX = 5;
+
   var filterElement = document.querySelector('.map__filters');
   var filterHouseTypeElement = document.querySelector('#housing-type');
   var filterPriceElement = document.querySelector('#housing-price');
   var filterRoomsElement = document.querySelector('#housing-rooms');
   var filterGuestsElement = document.querySelector('#housing-guests');
 
-  var filterMapFeaturesElement = document.querySelector('.map__features');
+  // var filterMapFeaturesElement = document.querySelector('.map__features');
 
   var priceRangeOfType = {
     middle: {
@@ -59,7 +62,7 @@
 
   var onFilterChange = function () {
     window.pins.remove();
-    window.cards.remove();
+    window.card.remove();
     window.pins.create(window.filter.filterOffers(window.map.getOffers()));
   };
 
@@ -70,13 +73,14 @@
       filterRoomsElement.addEventListener('change', onFilterChange);
       filterGuestsElement.addEventListener('change', onFilterChange);
 
-      //filterMapFeaturesElement.addEventListener('change', onFilterFeaturesChange);
+      // filterMapFeaturesElement.addEventListener('change', onFilterFeaturesChange);
       return offers
         .filter(filterOfferByHouseType)
         .filter(filterOfferByPrice)
         .filter(filterOfferByRooms)
-        .filter(filterOfferByGuests);
-        //.filter(filterOfferByFeatures)
+        .filter(filterOfferByGuests)
+        .slice(PINS_MIN, PINS_MAX);
+      // .filter(filterOfferByFeatures)
     },
     deactivate: function () {
       filterHouseTypeElement.removeEventListener('change', onFilterChange);
@@ -84,7 +88,7 @@
       filterRoomsElement.removeEventListener('change', onFilterChange);
       filterGuestsElement.removeEventListener('change', onFilterChange);
 
-      //filterMapFeaturesElement.removeEventListener('change', onFilterFeaturesChange);
+      // filterMapFeaturesElement.removeEventListener('change', onFilterFeaturesChange);
       filterElement.reset();
     }
   };

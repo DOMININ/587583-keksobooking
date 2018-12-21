@@ -1,6 +1,6 @@
 'use strict';
 
-//(function () {
+(function () {
   var offers;
   var mapElement = document.querySelector('.map');
 
@@ -17,7 +17,8 @@
     },
     activate: function () {
       mapElement.classList.remove('map--faded');
-      window.pins.create(window.filter.filterOffers(offers));
+
+      window.debounce(window.pins.create(window.filter.filterOffers(offers)));
     },
     deactivate: function () {
       mapElement.classList.add('map--faded');
@@ -28,4 +29,4 @@
       window.filter.deactivate();
     }
   };
-//})();
+})();

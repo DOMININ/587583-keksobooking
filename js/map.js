@@ -18,7 +18,7 @@
     activate: function () {
       mapElement.classList.remove('map--faded');
 
-      window.debounce(window.pins.create(window.filter.filterOffers(offers)));
+      window.pins.create(window.filter.filterOffers(offers));
     },
     deactivate: function () {
       mapElement.classList.add('map--faded');

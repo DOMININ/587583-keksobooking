@@ -19,7 +19,7 @@
     }
   };
 
-  var filterElement = document.querySelector('.map__filters');
+  var filtersElement = document.querySelector('.map__filters');
   var filterHouseTypeElement = document.querySelector('#housing-type');
   var filterPriceElement = document.querySelector('#housing-price');
   var filterRoomsElement = document.querySelector('#housing-rooms');
@@ -45,35 +45,31 @@
   var filterOfferByGuests = createSelectFilter(filterGuestsElement, 'guests');
 
   var filterOfferByFeatures = function (offer) {
-    var isValid = Object.keys(featureMapValues).reduce(function (valid, feature) {
+    return Object.keys(featureMapValues).reduce(function (valid, feature) {
       if (featureMapValues[feature]) {
         return valid && offer.offer.features.indexOf(feature) !== -1;
       }
       return valid;
     }, true);
-    return isValid;
   };
 
   var featureMapValues = {};
 
-  var onFilterFeaturesChange = function (evt) {
+  var onFilterFeaturesChange = window.debounce(function (evt) {
     var featureName = evt.target.value;
     var featureIsActive = document.querySelector('#filter-' + featureName).checked === true;
     featureMapValues[featureName] = featureIsActive;
+  });
 
-    window.pins.remove();
-    window.pins.create(window.filter.filterOffers(window.map.getOffers()));
-  };
-
-  var onFilterChange = function () {
+  var onFilterChange = window.debounce(function () {
     window.pins.remove();
     window.card.remove();
     window.pins.create(window.filter.filterOffers(window.map.getOffers()));
-  };
+  });
 
   window.filter = {
     filterOffers: function (offers) {
-      filterElement.addEventListener('change', onFilterChange);
+      filtersElement.addEventListener('change', onFilterChange);
       filterMapFeaturesElement.addEventListener('change', onFilterFeaturesChange);
       return offers
         .filter(filterOfferByHouseType)
@@ -84,9 +80,10 @@
         .slice(PINS_MIN, PINS_MAX);
     },
     deactivate: function () {
-      filterElement.removeEventListener('change', onFilterChange);
+      filtersElement.removeEventListener('change', onFilterChange);
       filterMapFeaturesElement.removeEventListener('change', onFilterFeaturesChange);
-      filterElement.reset();
+      filtersElement.reset();
+      featureMapValues = {};
     }
   };
 })();

@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+//(function () {
   var offers;
   var mapElement = document.querySelector('.map');
 
@@ -28,4 +28,4 @@
       window.filter.deactivate();
     }
   };
-})();
+//})();

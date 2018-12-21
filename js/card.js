@@ -10,6 +10,13 @@
 
   var KEYCODE_ESC = 27;
 
+  var OFFER_TYPES_TRANSLATION = {
+    palace: 'Дворец',
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
+
   var removeCardElement = function () {
     var cardCurrentElement = document.querySelector('.map__card');
     if (cardCurrentElement) {
@@ -91,7 +98,7 @@
     cardElement.querySelector('.popup__title').textContent = offer.title;
     cardElement.querySelector('.popup__text--address').textContent = offer.address;
     cardElement.querySelector('.popup__text--price').textContent = offer.price + TEXT_PRICE;
-    cardElement.querySelector('.popup__type').textContent = offer.type;
+    cardElement.querySelector('.popup__type').textContent = OFFER_TYPES_TRANSLATION[offer.type];
     cardElement.querySelector('.popup__text--capacity').textContent = createCapacityText(offer);
     cardElement.querySelector('.popup__text--time').textContent = createTimeText(offer);
     cardElement.querySelector('.popup__description').textContent = offer.description;
@@ -113,7 +120,7 @@
   var cardElement = document.querySelector('#card').cloneNode(true);
   var cardTemplateElement = cardElement.content.querySelector('.map__card');
 
-  window.cards = {
+  window.card = {
     create: function (data) {
       mapElement.insertBefore(createCardElement(data), mapFiltersElement);
       document.addEventListener('keydown', onDocumentEscKeydown);

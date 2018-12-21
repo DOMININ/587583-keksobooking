@@ -70,6 +70,8 @@
     resetPosition();
     window.form.deactivate();
     window.map.deactivate();
+    pinMainElement.addEventListener('click', onPinMainClick);
+    pinMainElement.addEventListener('mousedown', onPinMainMouseDown);
   };
 
   var onPinMainClick = function () {
@@ -85,7 +87,7 @@
       pinMainElement.addEventListener('mousedown', onPinMainMouseDown);
     },
     deactivate: function () {
-      pinMainElement.addEventListener('click', onPinMainClick);
+      pinMainElement.removeEventListener('mousedown', onPinMainMouseDown);
     },
     getPositionX: function () {
       return parseInt(pinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2;

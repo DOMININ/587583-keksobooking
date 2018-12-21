@@ -1,27 +1,32 @@
 'use strict';
 
-var pinsElement = document.querySelector('.map__pins');
+(function () {
+  var offers;
+  var mapElement = document.querySelector('.map');
 
-var offers;
+  window.form.syncAddressField();
 
-window.form.syncAddressField();
+  window.backend.load(function (loadedOffers) {
+    offers = loadedOffers;
+    window.pinMain.activate();
+  });
 
-var mapElement = document.querySelector('.map');
+  window.map = {
+    getOffers: function () {
+      return offers;
+    },
+    activate: function () {
+      mapElement.classList.remove('map--faded');
 
-window.map = {
-  activate: function () {
-    mapElement.classList.remove('map--faded');
-    pinsElement.appendChild(window.pins.create(offers));
-  },
-  deactivate: function () {
-    mapElement.classList.add('map--faded');
-    window.pinMain.deactivate();
-    window.form.syncAddressField();
-    window.pins.remove();
-  },
-};
-
-window.backend.load(function (loadedOffers) {
-  offers = loadedOffers;
-  window.pinMain.activate();
-});
+      window.pins.create(window.filter.filterOffers(offers));
+    },
+    deactivate: function () {
+      mapElement.classList.add('map--faded');
+      window.pinMain.deactivate();
+      window.form.syncAddressField();
+      window.pins.remove();
+      window.card.remove();
+      window.filter.deactivate();
+    }
+  };
+})();

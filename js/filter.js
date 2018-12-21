@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var FILTER_VALUE_ANY = 'any';
+
   var PINS_MIN = 0;
   var PINS_MAX = 5;
 
@@ -29,7 +31,7 @@
 
   var createSelectFilter = function (typeElement, type) {
     return function (offer) {
-      return typeElement.value === 'any' ? offer : offer.offer[type].toString() === typeElement.value;
+      return typeElement.value === FILTER_VALUE_ANY ? offer : offer.offer[type].toString() === typeElement.value;
     };
   };
 
@@ -37,7 +39,7 @@
 
   var filterOfferByPrice = function (offer) {
     var priceType = PRICE_RANGE_OF_TYPE[filterPriceElement.value];
-    return filterPriceElement.value === 'any' ? offer : offer.offer.price >= priceType.min && offer.offer.price <= priceType.max;
+    return filterPriceElement.value === FILTER_VALUE_ANY ? offer : offer.offer.price >= priceType.min && offer.offer.price <= priceType.max;
   };
 
   var filterOfferByRooms = createSelectFilter(filterRoomsElement, 'rooms');
@@ -45,11 +47,11 @@
   var filterOfferByGuests = createSelectFilter(filterGuestsElement, 'guests');
 
   var filterOfferByFeatures = function (offer) {
-    return Object.keys(featureMapValues).reduce(function (valid, feature) {
+    return Object.keys(featureMapValues).reduce(function (isValid, feature) {
       if (featureMapValues[feature]) {
-        return valid && offer.offer.features.indexOf(feature) !== -1;
+        return isValid && offer.offer.features.indexOf(feature) !== -1;
       }
-      return valid;
+      return isValid;
     }, true);
   };
 

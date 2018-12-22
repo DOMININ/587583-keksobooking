@@ -60,6 +60,7 @@
   var formElement = document.querySelector('.ad-form');
   var formFieldsetElements = document.querySelectorAll('fieldset');
   var formSelectElements = document.querySelectorAll('select');
+  var formButtonResetElement = document.querySelector('.ad-form__reset');
 
   var fieldTimeInElement = document.querySelector('#timein');
   var fieldTimeOutElement = document.querySelector('#timeout');
@@ -77,9 +78,20 @@
     element.removeAttribute('disabled');
   };
 
-  formFieldsetElements.forEach(addDisableAttribute);
-  formSelectElements.forEach(addDisableAttribute);
+  var onButtonResetClick = function (evt) {
+    evt.preventDefault();
+    window.form.deactivate();
+    window.pinMain.resetPosition();
+    window.map.deactivate();
+    window.pinMain.activate();
+  };
 
+  formFieldsetElements.forEach(function (element) {
+    addDisableAttribute(element);
+  });
+  formSelectElements.forEach(function (element) {
+    addDisableAttribute(element);
+  });
 
   window.form = {
     activate: function (onRequestSuccess, onRequestError) {
@@ -90,8 +102,12 @@
 
       formElement.classList.remove('ad-form--disabled');
 
-      formFieldsetElements.forEach(removeDisableAttribute);
-      formSelectElements.forEach(removeDisableAttribute);
+      formFieldsetElements.forEach(function (element) {
+        removeDisableAttribute(element);
+      });
+      formSelectElements.forEach(function (element) {
+        removeDisableAttribute(element);
+      });
 
       formElement.addEventListener('change', onFormChange);
       fieldTypeElement.addEventListener('change', onFieldTypeChange);
@@ -100,8 +116,17 @@
       fieldRoomNumberElement.addEventListener('change', onFieldRoomNumberChange);
 
       formElement.addEventListener('submit', onFormSubmit);
+
+      formButtonResetElement.addEventListener('click', onButtonResetClick);
     },
     deactivate: function () {
+      formFieldsetElements.forEach(function (element) {
+        addDisableAttribute(element);
+      });
+      formSelectElements.forEach(function (element) {
+        addDisableAttribute(element);
+      });
+
       formElement.classList.add('ad-form--disabled');
 
       formElement.reset();
@@ -112,6 +137,8 @@
       fieldTimeInElement.removeEventListener('change', onFieldTimeInChange);
       fieldTimeOutElement.removeEventListener('change', onFieldTimeOutChange);
       fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
+
+      formButtonResetElement.removeEventListener('click', onButtonResetClick);
     },
     syncAddressField: function () {
       fieldAddressElement.value = window.pinMain.getPositionX() + ', ' + window.pinMain.getPositionY();

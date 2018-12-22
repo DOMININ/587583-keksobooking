@@ -10,37 +10,26 @@
   // var fileChooserHouse = document.querySelector('.ad-form__input');
   // var previewHouse = document.querySelector('.ad-form__photo');
 
-  var dropArea = document.querySelector(".ad-form-header__drop-zone");
+  var dropZoneElement = document.querySelector('.ad-form-header__drop-zone');
 
-  ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach( function (eventName) {
-    dropArea.addEventListener(eventName, preventDefaults, false);
-    document.body.addEventListener(eventName, preventDefaults, false);
-  });
-
-  function preventDefaults (e) {
-    e.preventDefault();
-    e.stopPropagation()
-  }
-
-  function handleDrop(e) {
-    var dt = e.dataTransfer;
+  var handleDrop = function (evt) {
+    var dt = evt.dataTransfer;
     var files = dt.files;
-
     handleFiles(files);
-  }
+  };
 
-  function handleFiles(files) {
-    files = [...files];
+  var handleFiles = function (files) {
+    files = Array.from(files);
     files.forEach(previewFile);
-  }
+  };
 
-  function previewFile(file) {
+  var previewFile = function (file) {
     var reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onloadend = function() {
+    reader.onloadend = function () {
       previewMapElement.src = reader.result;
-    }
-  }
+    };
+  };
 
   var photoUpload = function (fileChooser, preview) {
     var file = fileChooser.files[0];
@@ -67,12 +56,12 @@
 
   window.formPhoto = {
     activate: function () {
-      dropArea.addEventListener('drop', handleDrop);
+      dropZoneElement.addEventListener('drop', handleDrop);
       fileChooserMapElement.addEventListener('change', onInputMapPhotoChange);
     },
     deactivate: function () {
       previewMapElement.src = DEFAULT_PHOTO;
-      dropArea.removeEventListener('drop', handleDrop);
+      dropZoneElement.removeEventListener('drop', handleDrop);
       fileChooserMapElement.removeEventListener('change', onInputMapPhotoChange);
     }
   };

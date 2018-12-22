@@ -10,6 +10,38 @@
   // var fileChooserHouse = document.querySelector('.ad-form__input');
   // var previewHouse = document.querySelector('.ad-form__photo');
 
+  var dropArea = document.querySelector(".ad-form-header__drop-zone");
+
+  ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach( function (eventName) {
+    dropArea.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults (e) {
+    e.preventDefault();
+    e.stopPropagation()
+  }
+
+  function handleDrop(e) {
+    var dt = e.dataTransfer;
+    var files = dt.files;
+
+    handleFiles(files);
+  }
+
+  function handleFiles(files) {
+    files = [...files];
+    files.forEach(previewFile);
+  }
+
+  function previewFile(file) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = function() {
+      previewMapElement.src = reader.result;
+    }
+  }
+
   var photoUpload = function (fileChooser, preview) {
     var file = fileChooser.files[0];
     var fileName = file.name.toLowerCase();
@@ -33,12 +65,14 @@
     photoUpload(fileChooserMapElement, previewMapElement);
   };
 
-  window.photo = {
+  window.formPhoto = {
     activate: function () {
+      dropArea.addEventListener('drop', handleDrop);
       fileChooserMapElement.addEventListener('change', onInputMapPhotoChange);
     },
     deactivate: function () {
       previewMapElement.src = DEFAULT_PHOTO;
+      dropArea.removeEventListener('drop', handleDrop);
       fileChooserMapElement.removeEventListener('change', onInputMapPhotoChange);
     }
   };

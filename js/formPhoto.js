@@ -119,6 +119,8 @@
 
   window.formPhoto = {
     activate: function () {
+      previewHouseElement = document.querySelector('.ad-form__photo');
+
       dropZoneMapElement.addEventListener('drop', onMapZoneDrop);
       dropZoneHouseElement.addEventListener('drop', onHouseZoneDrop);
       fileChooserMapElement.addEventListener('change', onInputMapPhotoChange);
@@ -127,6 +129,7 @@
     deactivate: function () {
       previewMapElement.src = DEFAULT_PHOTO;
       blocksPhotoRemove();
+
       dropZoneMapElement.removeEventListener('drop', onMapZoneDrop);
       dropZoneHouseElement.removeEventListener('drop', onHouseZoneDrop);
       fileChooserMapElement.removeEventListener('change', onInputMapPhotoChange);

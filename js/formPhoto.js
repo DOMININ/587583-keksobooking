@@ -4,24 +4,19 @@
   var DEFAULT_PHOTO = 'img/muffin-grey.svg';
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
-  var fileChooserMapElement = document.querySelector('.ad-form-header__input');
-  var previewMapElement = document.querySelector('.ad-form-header__preview img');
+  var mapFileChooserElement = document.querySelector('.ad-form-header__input');
+  var mapPreviewElement = document.querySelector('.ad-form-header__preview img');
 
-  var fileChooserHouseElement = document.querySelector('.ad-form__input');
-  var previewHouseElement = document.querySelector('.ad-form__photo');
+  var houseFileChooserElement = document.querySelector('.ad-form__input');
+  var housePreviewElement = document.querySelector('.ad-form__photo');
   var houseContainerElement = document.querySelector('.ad-form__photo-container');
 
   var dropZoneMapElement = document.querySelector('.ad-form-header__drop-zone');
   var dropZoneHouseElement = document.querySelector('.ad-form__drop-zone');
 
-  var preventDefaults = function (evt) {
+  var onZoneMapHouseDragoverDrop = function (evt) {
     evt.preventDefault();
   };
-
-  ['dragover', 'drop'].forEach(function (eventName) {
-    dropZoneMapElement.addEventListener(eventName, preventDefaults);
-    dropZoneHouseElement.addEventListener(eventName, preventDefaults);
-  });
 
   var createPreviewDrop = function (callback) {
     return function (file) {
@@ -33,26 +28,26 @@
     };
   };
 
-  var createImageDropHandler = function (previewFile) {
+  var createImageDropHandler = function (previewImage) {
     return function (evt) {
-      Array.from(evt.dataTransfer.files).forEach(previewFile);
+      Array.from(evt.dataTransfer.files).forEach(previewImage);
     };
   };
 
   var previewMapFileDrop = createPreviewDrop(function (content) {
-    previewMapElement.src = content;
+    mapPreviewElement.src = content;
   });
 
   var previewHouseFileDrop = createPreviewDrop(function (content) {
-    previewHouseElement.remove();
+    housePreviewElement.remove();
     var blockPhoto = document.createElement('div');
     blockPhoto.style.backgroundImage = 'url(' + content + ')';
     blockPhoto.style.backgroundSize = 'cover';
     houseContainerElement.appendChild(blockPhoto).classList.add('ad-form__photo');
   });
 
-  var onMapZoneDrop = createImageDropHandler(previewMapFileDrop);
-  var onHouseZoneDrop = createImageDropHandler(previewHouseFileDrop);
+  var onZoneMapDrop = createImageDropHandler(previewMapFileDrop);
+  var onZoneHouseDrop = createImageDropHandler(previewHouseFileDrop);
 
   var createPreviewChange = function (fileChooser, callback) {
     return function () {
@@ -75,12 +70,12 @@
     };
   };
 
-  var onPreviewMapFileChange = createPreviewChange(fileChooserMapElement, function (content) {
-    previewMapElement.src = content;
+  var onPreviewMapFileChange = createPreviewChange(mapFileChooserElement, function (content) {
+    mapPreviewElement.src = content;
   });
 
-  var onPreviewHouseFileChange = createPreviewChange(fileChooserHouseElement, function (content) {
-    previewHouseElement.remove();
+  var onPreviewHouseFileChange = createPreviewChange(houseFileChooserElement, function (content) {
+    housePreviewElement.remove();
     var blockPhoto = document.createElement('div');
     blockPhoto.style.backgroundImage = 'url(' + content + ')';
     blockPhoto.style.backgroundSize = 'cover';
@@ -100,21 +95,26 @@
 
   window.formPhoto = {
     activate: function () {
-      previewHouseElement = document.querySelector('.ad-form__photo');
+      housePreviewElement = document.querySelector('.ad-form__photo');
 
-      dropZoneMapElement.addEventListener('drop', onMapZoneDrop);
-      dropZoneHouseElement.addEventListener('drop', onHouseZoneDrop);
-      fileChooserMapElement.addEventListener('change', onPreviewMapFileChange);
-      fileChooserHouseElement.addEventListener('change', onPreviewHouseFileChange);
+      dropZoneMapElement.addEventListener('drop', onZoneMapHouseDragoverDrop);
+      dropZoneHouseElement.addEventListener('drop', onZoneMapHouseDragoverDrop);
+      dropZoneMapElement.addEventListener('dragover', onZoneMapHouseDragoverDrop);
+      dropZoneHouseElement.addEventListener('dragover', onZoneMapHouseDragoverDrop);
+
+      dropZoneMapElement.addEventListener('drop', onZoneMapDrop);
+      dropZoneHouseElement.addEventListener('drop', onZoneHouseDrop);
+      mapFileChooserElement.addEventListener('change', onPreviewMapFileChange);
+      houseFileChooserElement.addEventListener('change', onPreviewHouseFileChange);
     },
     deactivate: function () {
-      previewMapElement.src = DEFAULT_PHOTO;
+      mapPreviewElement.src = DEFAULT_PHOTO;
       blocksPhotoRemove();
 
-      dropZoneMapElement.removeEventListener('drop', onMapZoneDrop);
-      dropZoneHouseElement.removeEventListener('drop', onHouseZoneDrop);
-      fileChooserMapElement.removeEventListener('change', onPreviewMapFileChange);
-      fileChooserHouseElement.removeEventListener('change', onPreviewHouseFileChange);
+      dropZoneMapElement.removeEventListener('drop', onZoneMapDrop);
+      dropZoneHouseElement.removeEventListener('drop', onZoneHouseDrop);
+      mapFileChooserElement.removeEventListener('change', onPreviewMapFileChange);
+      houseFileChooserElement.removeEventListener('change', onPreviewHouseFileChange);
     }
   };
 })();

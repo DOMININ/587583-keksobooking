@@ -18,6 +18,7 @@
     var handleClick = function () {
       window.card.remove();
       window.card.create(data);
+      element.classList.add('map__pin--active');
     };
 
     element.addEventListener('click', handleClick);

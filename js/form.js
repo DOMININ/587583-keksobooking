@@ -60,6 +60,7 @@
   var formElement = document.querySelector('.ad-form');
   var formFieldsetElements = document.querySelectorAll('fieldset');
   var formSelectElements = document.querySelectorAll('select');
+  var formButtonSubmitElement = document.querySelector('.ad-form__submit');
   var formButtonResetElement = document.querySelector('.ad-form__reset');
 
   var fieldTimeInElement = document.querySelector('#timein');
@@ -69,6 +70,8 @@
   var fieldRoomNumberElement = document.querySelector('#room_number');
   var fieldCapacityElement = document.querySelector('#capacity');
   var fieldAddressElement = document.querySelector('#address');
+
+  var inputsRequired = document.querySelectorAll('.ad-form input:required');
 
   var addDisableAttribute = function (element) {
     element.setAttribute('disabled', '');
@@ -84,6 +87,28 @@
     window.pinMain.resetPosition();
     window.map.deactivate();
     window.pinMain.activate();
+  };
+
+  var inputCheckValidity = function () {
+    inputsRequired.forEach(function (input) {
+      if (input.checkValidity() === false) {
+        input.style.borderColor = 'red';
+      } else {
+        input.style.borderColor = '#d9d9d3';
+      }
+    });
+  };
+
+  var onButtonSubmitClick = function () {
+    inputCheckValidity();
+    inputsRequired.forEach(function (input) {
+      input.addEventListener('change', function () {
+        inputCheckValidity();
+      });
+      input.removeEventListener('change', function () {
+        inputCheckValidity();
+      });
+    });
   };
 
   formFieldsetElements.forEach(function (element) {
@@ -117,6 +142,7 @@
 
       formElement.addEventListener('submit', onFormSubmit);
 
+      formButtonSubmitElement.addEventListener('click', onButtonSubmitClick);
       formButtonResetElement.addEventListener('click', onButtonResetClick);
     },
     deactivate: function () {
@@ -138,6 +164,7 @@
       fieldTimeOutElement.removeEventListener('change', onFieldTimeOutChange);
       fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
 
+      formButtonSubmitElement.removeEventListener('click', onButtonSubmitClick);
       formButtonResetElement.removeEventListener('click', onButtonResetClick);
     },
     syncAddressField: function () {

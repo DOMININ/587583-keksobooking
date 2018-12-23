@@ -19,6 +19,7 @@
       mapElement.classList.remove('map--faded');
 
       window.pins.create(window.filter.filterOffers(offers));
+      window.formPhoto.activate();
     },
     deactivate: function () {
       mapElement.classList.add('map--faded');
@@ -27,6 +28,7 @@
       window.pins.remove();
       window.card.remove();
       window.filter.deactivate();
+      window.formPhoto.deactivate();
     }
   };
 })();

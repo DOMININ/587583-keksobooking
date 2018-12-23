@@ -60,14 +60,9 @@
     window.messages.createErrorMessage();
   };
 
-  var resetPosition = function () {
-    pinMainElement.style.top = PIN_MAIN_Y + 'px';
-    pinMainElement.style.left = PIN_MAIN_X + 'px';
-  };
-
   var onRequestSuccess = function () {
     window.messages.createSuccessMessage();
-    resetPosition();
+    window.pinMain.resetPosition();
     window.form.deactivate();
     window.map.deactivate();
     pinMainElement.addEventListener('click', onPinMainClick);
@@ -94,6 +89,10 @@
     },
     getPositionY: function () {
       return parseInt(pinMainElement.style.top, 10) + PIN_MAIN_HEIGHT;
+    },
+    resetPosition: function () {
+      pinMainElement.style.top = PIN_MAIN_Y + 'px';
+      pinMainElement.style.left = PIN_MAIN_X + 'px';
     }
   };
 })();

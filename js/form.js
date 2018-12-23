@@ -91,20 +91,20 @@
 
   var inputCheckValidity = function () {
     inputsRequired.forEach(function (input) {
-      if (input.checkValidity() === false) {
-        input.style.borderColor = 'red';
-      } else {
-        input.style.borderColor = '#d9d9d3';
-      }
+      input.style.borderColor = input.checkValidity() === false ? 'red' : '#d9d9d3';
     });
   };
 
   var onButtonSubmitClick = function () {
     inputCheckValidity();
+
     inputsRequired.forEach(function (input) {
       input.addEventListener('change', function () {
         inputCheckValidity();
       });
+    });
+
+    inputsRequired.forEach(function (input) {
       input.removeEventListener('change', function () {
         inputCheckValidity();
       });

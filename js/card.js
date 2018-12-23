@@ -31,11 +31,13 @@
   var onDocumentEscKeydown = function (evt) {
     if (evt.keyCode === KEYCODE_ESC) {
       removeCardElement();
+      window.pins.resetActivePin();
     }
   };
 
   var removeCard = function () {
     removeCardElement();
+    window.pins.resetActivePin();
     document.removeEventListener('keydown', onDocumentEscKeydown);
   };
 

@@ -41,6 +41,12 @@
       Array.prototype.forEach.call(pinElements, function (pinElement) {
         pinElement.remove();
       });
+    },
+    resetActivePin: function () {
+      var pinCurrentElement = document.querySelector('.map__pin--active');
+      if (pinCurrentElement) {
+        pinCurrentElement.classList.remove('map__pin--active');
+      }
     }
   };
 })();

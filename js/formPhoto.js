@@ -22,41 +22,69 @@
     document.body.addEventListener(eventName, preventDefaults);
   });
 
-  var onMapZoneDrop = function (evt) {
-    var dt = evt.dataTransfer;
-    var files = dt.files;
-    files = Array.from(files);
-    files.forEach(previewMapFile);
+  var createPreviewChange = function (fileChooser, callback) {
+    var file = fileChooser.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        callback(reader.result);
+      });
+
+      reader.readAsDataURL(file);
+    }
   };
 
-  var previewMapFile = function (file) {
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = function () {
-      previewMapElement.src = reader.result;
+  var createPreviewDrop = function (callback) {
+    return function (file) {
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = function () {
+        callback(reader.result);
+      };
     };
   };
 
-  var onHouseZoneDrop = function (evt) {
-    var dt = evt.dataTransfer;
-    var files = dt.files;
-    files = Array.from(files);
-    files.forEach(previewHouseFile);
-  };
-
-  var previewHouseFile = function (file) {
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = function () {
-      previewHouseElement.remove();
-      var blockPhoto = document.createElement('div');
-      blockPhoto.style.backgroundImage = 'url(' + reader.result + ')';
-      blockPhoto.style.backgroundSize = 'cover';
-      houseContainerElement.appendChild(blockPhoto).classList.add('ad-form__photo');
+  var createImageDropHandler = function (previewFile) {
+    return function (evt) {
+      Array.from(evt.dataTransfer.files).forEach(previewFile);
     };
   };
 
-  var photoMapUpload = function (fileChooser, preview) {
+  var previewMapFileDrop = createPreviewDrop(function (content) {
+    previewMapElement.src = content;
+  });
+
+  var previewHouseFileDrop = createPreviewDrop(function (content) {
+    previewHouseElement.remove();
+    var blockPhoto = document.createElement('div');
+    blockPhoto.style.backgroundImage = 'url(' + content + ')';
+    blockPhoto.style.backgroundSize = 'cover';
+    houseContainerElement.appendChild(blockPhoto).classList.add('ad-form__photo');
+  });
+
+  var previewMapFileChange = createPreviewChange(fileChooserMapElement, function (content) {
+    previewMapElement.src = content;
+  });
+
+  var previewHouseFileChange = createPreviewChange(function (content) {
+    previewHouseElement.remove();
+    var blockPhoto = document.createElement('div');
+    blockPhoto.style.backgroundImage = 'url(' + content + ')';
+    blockPhoto.style.backgroundSize = 'cover';
+    houseContainerElement.appendChild(blockPhoto).classList.add('ad-form__photo');
+  });
+
+  var onMapZoneDrop = createImageDropHandler(previewMapFileDrop);
+  var onHouseZoneDrop = createImageDropHandler(previewHouseFileDrop);
+
+  /*var photoMapUpload = function (fileChooser, preview) {
     var file = fileChooser.files[0];
     var fileName = file.name.toLowerCase();
 
@@ -104,7 +132,9 @@
 
   var onInputHousePhotoChange = function () {
     photoHouseUpload(fileChooserHouseElement);
-  };
+  };*/
+
+  var onInputMapPhotoChange = previewMapFileChange;
 
   var blocksPhotoRemove = function () {
     var previewHouseElements = document.querySelectorAll('.ad-form__photo');

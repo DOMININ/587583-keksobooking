@@ -64,9 +64,8 @@
   });
 
   var onFilterChange = window.debounce(function () {
-    // @TODO
-    window.card.remove();
     window.pins.remove();
+    window.card.remove();
     window.pins.create(window.filter.filterOffers(window.map.getOffers()));
   });
 
@@ -74,7 +73,6 @@
     filterOffers: function (offers) {
       filtersElement.addEventListener('change', onFilterChange);
       filterMapFeaturesElement.addEventListener('change', onFilterFeaturesChange);
-
       return offers
         .filter(filterOfferByHouseType)
         .filter(filterOfferByPrice)

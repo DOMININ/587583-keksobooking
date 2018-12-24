@@ -2,41 +2,14 @@
 
 (function () {
   var offers;
-
   var mapElement = document.querySelector('.map');
 
-  var onFormUploadSuccess = function () {
-    window.messages.createSuccessMessage();
-  };
+  window.form.syncAddressField();
 
-  var onFormUploadError = function () {
-    window.messages.createErrorMessage();
-  };
-
-  var onFormSubmit = function (data) {
-    window.backend.upload(onFormUploadSuccess, onFormUploadError, data);
-  };
-
-  var onFormReset = function () {
-    // @TODO
-    window.form.deactivate();
-    window.map.deactivate();
-    window.pinMain.resetPosition();
-    window.pinMain.activate();
-  };
-
-  var onPinMainMouseMove = function (x, y) {
-    window.form.setAddressField(x, y);
-    window.form.activate(onFormSubmit, onFormReset);
-  };
-
-  var onLoadSuccess = function (loadedOffers) {
+  window.backend.load(function (loadedOffers) {
     offers = loadedOffers;
-
-    window.pinMain.activate(onPinMainMouseMove);
-  };
-
-  window.backend.load(onLoadSuccess);
+    window.pinMain.activate();
+  });
 
   window.map = {
     getOffers: function () {
@@ -51,7 +24,7 @@
     deactivate: function () {
       mapElement.classList.add('map--faded');
       window.pinMain.deactivate();
-      window.form.setAddressField();
+      window.form.syncAddressField();
       window.pins.remove();
       window.card.remove();
       window.filter.deactivate();

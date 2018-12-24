@@ -16,8 +16,6 @@
     element.querySelector('img').alt = TEXT_OFFER_TITLE;
 
     var handleClick = function () {
-
-      // @TODO
       window.card.remove();
       window.card.create(data);
       element.classList.add('map__pin--active');

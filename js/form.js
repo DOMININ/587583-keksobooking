@@ -46,27 +46,29 @@
     });
   };
 
-  var onFormChange = function () {
+  var onFormChange = function (evt) {
     var fieldRoomNumberValue = fieldRoomNumberElement.value;
     var fieldCapacityValue = fieldCapacityElement.value;
     var capacityValues = VALIDATION_CAPACITY_MAP[fieldRoomNumberValue];
     var validityMessage = capacityValues.indexOf(fieldCapacityValue) === -1 ? TEXT_ERROR_CAPACITY : '';
 
     fieldCapacityElement.setCustomValidity(validityMessage);
+
+    var inputCheckValidity = evt.target.checkValidity();
+    if (inputCheckValidity) {
+      evt.target.style.borderColor = '#d9d9d3';
+    } else {
+      evt.target.style.borderColor = 'red';
+    }
   };
 
-  // делегирование
-  /*var onFormChange = function (evt) {
-    if (evt.target.checkValidity()) {
-      // valid - remove red border
-    } else {
-      // invalid - add red border
-    }
-  };*/
+  var onFormSubmit;
 
   var formElement = document.querySelector('.ad-form');
   var formFieldsetElements = document.querySelectorAll('fieldset');
   var formSelectElements = document.querySelectorAll('select');
+  var formButtonSubmitElement = document.querySelector('.ad-form__submit');
+  var formButtonResetElement = document.querySelector('.ad-form__reset');
 
   var fieldTimeInElement = document.querySelector('#timein');
   var fieldTimeOutElement = document.querySelector('#timeout');
@@ -76,52 +78,62 @@
   var fieldCapacityElement = document.querySelector('#capacity');
   var fieldAddressElement = document.querySelector('#address');
 
+  var inputsRequired = document.querySelectorAll('.ad-form input:required');
 
-  var setDisableAttributeForElements = function (elements) {
-    Array.prototype.forEach.call(elements, function (element) {
-      element.setAttribute('disabled', '');
+  var addDisableAttribute = function (element) {
+    element.setAttribute('disabled', '');
+  };
+
+  var removeDisableAttribute = function (element) {
+    element.removeAttribute('disabled');
+  };
+
+  var onButtonResetClick = function (evt) {
+    evt.preventDefault();
+    window.form.deactivate();
+    window.pinMain.resetPosition();
+    window.map.deactivate();
+    window.pinMain.activate();
+  };
+
+  var inputCheckValidity = function () {
+    inputsRequired.forEach(function (input) {
+      input.style.borderColor = input.checkValidity() === false ? 'red' : '#d9d9d3';
     });
   };
 
-  var removeDisableAttributeForElements = function (elements) {
-    Array.prototype.forEach.call(elements, function (element) {
-      element.removeAttribute('disabled');
+  var resetInputBorderColor = function () {
+    inputsRequired.forEach(function (input) {
+      input.style.borderColor = '#d9d9d3';
     });
   };
 
-  setDisableAttributeForElements(formFieldsetElements);
-  setDisableAttributeForElements(formSelectElements);
-
-  var createFormSubmitHandler = function (callbackFormSubmit) {
-    return function (evt) {
-      callbackFormSubmit(new FormData(formElement));
-      evt.preventDefault();
-    };
+  var onButtonSubmitClick = function () {
+    inputCheckValidity();
   };
 
-  var createFormResetHandler = function (callbackFormReset) {
-    return function (evt) {
-      callbackFormReset();
-      evt.preventDefault();
-    };
-  };
-
-  var onFormSubmit = function () {
-
-  };
-  var onFormReset = function () {
-
-  };
+  formFieldsetElements.forEach(function (element) {
+    addDisableAttribute(element);
+  });
+  formSelectElements.forEach(function (element) {
+    addDisableAttribute(element);
+  });
 
   window.form = {
-    activate: function (onFormSubmit, onFormReset) {
-      onFormSubmit = createFormSubmitHandler(onFormSubmit);
-      onFormReset = createFormResetHandler(onFormReset);
+    activate: function (onRequestSuccess, onRequestError) {
+      onFormSubmit = function (evt) {
+        window.backend.upload(onRequestSuccess, onRequestError, new FormData(formElement));
+        evt.preventDefault();
+      };
 
       formElement.classList.remove('ad-form--disabled');
 
-      removeDisableAttributeForElements(formFieldsetElements);
-      removeDisableAttributeForElements(formSelectElements);
+      formFieldsetElements.forEach(function (element) {
+        removeDisableAttribute(element);
+      });
+      formSelectElements.forEach(function (element) {
+        removeDisableAttribute(element);
+      });
 
       formElement.addEventListener('change', onFormChange);
       fieldTypeElement.addEventListener('change', onFieldTypeChange);
@@ -130,26 +142,36 @@
       fieldRoomNumberElement.addEventListener('change', onFieldRoomNumberChange);
 
       formElement.addEventListener('submit', onFormSubmit);
-      formElement.addEventListener('reset', onFormReset);
+
+      formButtonSubmitElement.addEventListener('click', onButtonSubmitClick);
+      formButtonResetElement.addEventListener('click', onButtonResetClick);
     },
     deactivate: function () {
-      setDisableAttributeForElements(formFieldsetElements);
-      setDisableAttributeForElements(formSelectElements);
+      resetInputBorderColor();
+
+      formFieldsetElements.forEach(function (element) {
+        addDisableAttribute(element);
+      });
+      formSelectElements.forEach(function (element) {
+        addDisableAttribute(element);
+      });
 
       formElement.classList.add('ad-form--disabled');
+
+      formElement.reset();
+      formElement.removeEventListener('change', onFormChange);
+      formElement.removeEventListener('submit', onFormSubmit);
 
       fieldTypeElement.removeEventListener('change', onFieldTypeChange);
       fieldTimeInElement.removeEventListener('change', onFieldTimeInChange);
       fieldTimeOutElement.removeEventListener('change', onFieldTimeOutChange);
       fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
 
-      formElement.reset();
-      formElement.removeEventListener('change', onFormChange);
-      formElement.removeEventListener('reset', onFormReset);
-      formElement.removeEventListener('submit', onFormSubmit);
+      formButtonSubmitElement.removeEventListener('click', onButtonSubmitClick);
+      formButtonResetElement.removeEventListener('click', onButtonResetClick);
     },
-    setAddressField: function (x, y) {
-      fieldAddressElement.value = x + ', ' + y;
+    syncAddressField: function () {
+      fieldAddressElement.value = window.pinMain.getPositionX() + ', ' + window.pinMain.getPositionY();
     }
   };
 })();

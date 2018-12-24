@@ -13,58 +13,18 @@
   var pinMainElement = document.querySelector('.map__pin--main');
 
 
-  var onPinMainMouseDown = function (mouseDownEvt) {
-    mouseDownEvt.preventDefault();
-
-    window.form.syncAddressField();
-
-    var startCoords = {
-      x: mouseDownEvt.clientX,
-      y: mouseDownEvt.clientY
-    };
-
-    var onDocumentMouseMove = function (mouseMoveEvt) {
-      mouseMoveEvt.preventDefault();
-
-      var shiftCoords = {
-        x: startCoords.x - mouseMoveEvt.clientX,
-        y: startCoords.y - mouseMoveEvt.clientY
-      };
-
-      startCoords = {
-        x: mouseMoveEvt.clientX,
-        y: mouseMoveEvt.clientY
-      };
-
-      var y = pinMainElement.offsetTop - shiftCoords.y;
-      var x = pinMainElement.offsetLeft - shiftCoords.x;
-
-      pinMainElement.style.top = Math.max(PIN_MIN_Y - PIN_MAIN_HEIGHT, Math.min(y, PIN_MAX_Y - PIN_MAIN_HEIGHT)) + 'px';
-      pinMainElement.style.left = Math.max(PIN_MIN_X, Math.min(x, PIN_MAX_X - PIN_MAIN_WIDTH)) + 'px';
-
-      window.form.syncAddressField();
-    };
-
-    var onDocumentMouseUp = function (mouseUpEvt) {
-      mouseUpEvt.preventDefault();
-
-      document.removeEventListener('mousemove', onDocumentMouseMove);
-      document.removeEventListener('mouseup', onDocumentMouseUp);
-    };
-
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('mouseup', onDocumentMouseUp);
-  };
-
   var onRequestError = function () {
+    // @TODO
     window.messages.createErrorMessage();
   };
 
   var onRequestSuccess = function () {
+    // @TODO
     window.messages.createSuccessMessage();
     window.pinMain.resetPosition();
     window.form.deactivate();
     window.map.deactivate();
+
     pinMainElement.addEventListener('click', onPinMainClick);
     pinMainElement.addEventListener('mousedown', onPinMainMouseDown);
   };
@@ -76,19 +36,66 @@
     pinMainElement.removeEventListener('click', onPinMainClick);
   };
 
+  var createPinMainMouseDownHandler = function(callbackMouseMove) {
+    return function (mouseDownEvt) {
+      mouseDownEvt.preventDefault();
+
+      var startCoords = {
+        x: mouseDownEvt.clientX,
+        y: mouseDownEvt.clientY
+      };
+
+      var onDocumentMouseMove = function (mouseMoveEvt) {
+        mouseMoveEvt.preventDefault();
+
+        var shiftCoords = {
+          x: startCoords.x - mouseMoveEvt.clientX,
+          y: startCoords.y - mouseMoveEvt.clientY
+        };
+
+        startCoords = {
+          x: mouseMoveEvt.clientX,
+          y: mouseMoveEvt.clientY
+        };
+
+        var offsetY = pinMainElement.offsetTop - shiftCoords.y;
+        var offsetX = pinMainElement.offsetLeft - shiftCoords.x;
+
+        var y = Math.max(PIN_MIN_Y - PIN_MAIN_HEIGHT, Math.min(offsetY, PIN_MAX_Y - PIN_MAIN_HEIGHT));
+        var x = Math.max(PIN_MIN_X, Math.min(offsetX, PIN_MAX_X - PIN_MAIN_WIDTH));
+
+        pinMainElement.style.top = y + 'px';
+        pinMainElement.style.left = x + 'px';
+
+        callbackMouseMove(
+            x + PIN_MAIN_WIDTH / 2,
+            y + PIN_MAIN_HEIGHT
+        );
+      };
+
+      var onDocumentMouseUp = function (mouseUpEvt) {
+        mouseUpEvt.preventDefault();
+
+        document.removeEventListener('mousemove', onDocumentMouseMove);
+        document.removeEventListener('mouseup', onDocumentMouseUp);
+      };
+
+      document.addEventListener('mousemove', onDocumentMouseMove);
+      document.addEventListener('mouseup', onDocumentMouseUp);
+    };
+  };
+
+  var onPinMainMouseDown;
+
   window.pinMain = {
-    activate: function () {
+    activate: function (callbackMouseMove) {
+      onPinMainMouseDown = createPinMainMouseDownHandler(callbackMouseMove);
+
       pinMainElement.addEventListener('click', onPinMainClick);
       pinMainElement.addEventListener('mousedown', onPinMainMouseDown);
     },
     deactivate: function () {
       pinMainElement.removeEventListener('mousedown', onPinMainMouseDown);
-    },
-    getPositionX: function () {
-      return parseInt(pinMainElement.style.left, 10) + PIN_MAIN_WIDTH / 2;
-    },
-    getPositionY: function () {
-      return parseInt(pinMainElement.style.top, 10) + PIN_MAIN_HEIGHT;
     },
     resetPosition: function () {
       pinMainElement.style.top = PIN_MAIN_Y + 'px';

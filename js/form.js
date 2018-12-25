@@ -3,8 +3,8 @@
 (function () {
   var TEXT_ERROR_CAPACITY = 'Измените значение поля';
 
-  var INPUT_COLOR_GRAY = '#d9d9d3';
-  var INPUT_COLOR_RED = 'red';
+  var COLOR_GRAY = '#d9d9d3';
+  var COLOR_RED = 'red';
 
   var OFFER_PRICES = {
     palace: '10000',
@@ -95,19 +95,19 @@
     window.pinMain.activate();
   };
 
-  var inputSetColor = function (input) {
-    input.style.borderColor = input.checkValidity() === false ? INPUT_COLOR_RED : INPUT_COLOR_GRAY;
+  var setElementBorderColor = function (element) {
+    element.style.borderColor = element.checkValidity() === false ? COLOR_RED : COLOR_GRAY;
   };
 
   var inputCheckValidity = function () {
-    inputsRequired.forEach(function () {
-      inputSetColor();
+    inputsRequired.forEach(function (element) {
+      setElementBorderColor(element);
     });
   };
 
   var resetInputBorderColor = function () {
     inputsRequired.forEach(function (input) {
-      input.style.borderColor = INPUT_COLOR_GRAY;
+      input.style.borderColor = COLOR_GRAY;
     });
   };
 

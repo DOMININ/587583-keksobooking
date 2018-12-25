@@ -3,6 +3,9 @@
 (function () {
   var TEXT_ERROR_CAPACITY = 'Измените значение поля';
 
+  var INPUT_COLOR_GRAY = '#d9d9d3';
+  var INPUT_COLOR_RED = 'red';
+
   var OFFER_PRICES = {
     palace: '10000',
     flat: '1000',
@@ -55,11 +58,7 @@
     fieldCapacityElement.setCustomValidity(validityMessage);
 
     var inputCheckValidity = evt.target.checkValidity();
-    if (inputCheckValidity) {
-      evt.target.style.borderColor = '#d9d9d3';
-    } else {
-      evt.target.style.borderColor = 'red';
-    }
+    evt.target.style.borderColor = inputCheckValidity === true ? '#d9d9d3' : 'red';
   };
 
   var onFormSubmit;
@@ -96,15 +95,19 @@
     window.pinMain.activate();
   };
 
+  var inputSetColor = function (input) {
+    input.style.borderColor = input.checkValidity() === false ? INPUT_COLOR_RED : INPUT_COLOR_GRAY;
+  };
+
   var inputCheckValidity = function () {
-    inputsRequired.forEach(function (input) {
-      input.style.borderColor = input.checkValidity() === false ? 'red' : '#d9d9d3';
+    inputsRequired.forEach(function () {
+      inputSetColor();
     });
   };
 
   var resetInputBorderColor = function () {
     inputsRequired.forEach(function (input) {
-      input.style.borderColor = '#d9d9d3';
+      input.style.borderColor = INPUT_COLOR_GRAY;
     });
   };
 

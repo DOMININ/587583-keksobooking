@@ -30,10 +30,10 @@
 
   var createSelectFilter = function (typeElement, type) {
     return function (offer) {
-      if (filterPriceElement.value === FILTER_VALUE_ANY) {
+      if (typeElement.value === FILTER_VALUE_ANY) {
         return true;
       }
-      return priceOffer >= priceRestriction.min && priceOffer <= priceRestriction.max;
+      return offer.offer[type].toString() === typeElement.value;
     };
   };
 

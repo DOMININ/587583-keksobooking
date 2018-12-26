@@ -115,7 +115,9 @@
 
   var createFormResetHandler = function (onFormReset) {
     return function () {
-      onFormReset();
+      setTimeout(function () {
+        onFormReset();
+      });
     };
   };
 

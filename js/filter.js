@@ -2,9 +2,8 @@
 
 (function () {
   var FILTER_VALUE_ANY = 'any';
-
-  var PINS_MIN = 0;
-  var PINS_MAX = 5;
+  var FILTER_LIMIT_MIN = 0;
+  var FILTER_LIMIT_MAX = 5;
 
   var PRICE_RANGE_OF_TYPE = {
     middle: {
@@ -77,12 +76,16 @@
   var onFilterChange;
   var filterOffers = function (offers) {
     return offers
-      .filter(filterOfferByHouseType)
-      .filter(filterOfferByPrice)
-      .filter(filterOfferByRooms)
-      .filter(filterOfferByGuests)
-      .filter(filterOfferByFeatures)
-      .slice(PINS_MIN, PINS_MAX);
+      .filter(function (offer) {
+        return (
+          filterOfferByHouseType(offer) &&
+          filterOfferByPrice(offer) &&
+          filterOfferByRooms(offer) &&
+          filterOfferByGuests(offer) &&
+          filterOfferByFeatures(offer)
+        );
+      })
+      .slice(FILTER_LIMIT_MIN, FILTER_LIMIT_MAX);
   };
 
   window.filter = {

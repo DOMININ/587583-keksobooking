@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var OFFER_LIMIT_MIN = 0;
+  var OFFER_LIMIT_MAX = 5;
+
   var loadedOffers;
   var mapElement = document.querySelector('.map');
 
@@ -53,7 +56,7 @@
   var onFilter = function (filteredOffers) {
     window.pins.remove();
     window.card.remove();
-    window.pins.create(filteredOffers);
+    window.pins.create(filteredOffers, onPinClick);
   };
 
   var mapIsActive = false;
@@ -63,7 +66,11 @@
       mapIsActive = true;
       mapElement.classList.remove('map--faded');
 
-      window.pins.create(loadedOffers, onPinClick);
+      window.pins.create(
+          loadedOffers.slice(OFFER_LIMIT_MIN, OFFER_LIMIT_MAX),
+          onPinClick
+      );
+
       window.filter.activate(loadedOffers, onFilter);
 
       window.formPhoto.activate();

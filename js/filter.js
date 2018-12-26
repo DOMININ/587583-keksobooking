@@ -30,8 +30,10 @@
 
   var createSelectFilter = function (typeElement, type) {
     return function (offer) {
-      return typeElement.value === FILTER_VALUE_ANY ? offer : offer.offer[type].toString() === typeElement.value;
-      // разрбить
+      if (filterPriceElement.value === FILTER_VALUE_ANY) {
+        return true;
+      }
+      return priceOffer >= priceRestriction.min && priceOffer <= priceRestriction.max;
     };
   };
 
@@ -44,7 +46,7 @@
     var priceOffer = offer.offer.price;
 
     if (filterPriceElement.value === FILTER_VALUE_ANY) {
-      return TextTrackCueList;
+      return true;
     }
 
     return priceOffer >= priceRestriction.min && priceOffer <= priceRestriction.max;
@@ -61,9 +63,9 @@
 
   var featureMapValues = {};
 
-  var onFilterFeaturesChange = window.debounce(function (evt) {
+  var onFilterFeaturesChange = function (evt) {
     featureMapValues[evt.target.value] = evt.target.checked;
-  });
+  };
 
   var createFilterChangeHandler = function (offers, onFilterChange) {
     return window.debounce(function () {

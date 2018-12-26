@@ -1,30 +1,82 @@
 'use strict';
 
 (function () {
-  var offers;
+  var loadedOffers;
   var mapElement = document.querySelector('.map');
 
-  window.form.syncAddressField();
+  var onRequestError = function () {
+    window.messages.createErrorMessage();
+  };
 
-  window.backend.load(function (loadedOffers) {
-    offers = loadedOffers;
-    window.pinMain.activate();
+  var onRequestSuccess = function () {
+    window.messages.createSuccessMessage();
+    window.form.deactivate();
+    window.map.deactivate();
+  };
+
+  var onFormSubmit = function (data) {
+    window.backend.upload(onRequestSuccess, onRequestError, data);
+  };
+
+  var onFormReset = function () {
+    window.map.deactivate();
+    window.form.deactivate();
+    window.pinMain.resetPosition();
+  };
+
+  var onMainPinMouseUp = function () {
+    if (!mapIsActive) {
+      window.map.activate();
+      window.form.activate(onFormSubmit, onFormReset);
+    }
+  };
+
+  var onMainPinMouseMove = function (x, y) {
+    window.form.setAddressField(x, y);
+  };
+
+  window.form.setAddressField(
+      window.pinMain.getPositionX(),
+      window.pinMain.getPositionY()
+  );
+
+  window.backend.load(function (offers) {
+    loadedOffers = offers;
+    window.pinMain.activate(onMainPinMouseUp, onMainPinMouseMove);
   });
 
+  var onPinClick = function (data) {
+    window.card.remove();
+    window.card.create(data);
+  };
+
+  var onFilter = function (filteredOffers) {
+    window.pins.remove();
+    window.card.remove();
+    window.pins.create(filteredOffers);
+  };
+
+  var mapIsActive = false;
+
   window.map = {
-    getOffers: function () {
-      return offers;
-    },
     activate: function () {
+      mapIsActive = true;
       mapElement.classList.remove('map--faded');
 
-      window.pins.create(window.filter.filterOffers(offers));
+      window.pins.create(loadedOffers, onPinClick);
+      window.filter.activate(loadedOffers, onFilter);
+
       window.formPhoto.activate();
     },
     deactivate: function () {
+      mapIsActive = false;
       mapElement.classList.add('map--faded');
-      window.pinMain.deactivate();
-      window.form.syncAddressField();
+
+      window.form.setAddressField(
+          window.pinMain.getPositionX(),
+          window.pinMain.getPositionY()
+      );
+
       window.pins.remove();
       window.card.remove();
       window.filter.deactivate();

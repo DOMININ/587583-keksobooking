@@ -1,52 +1,39 @@
 'use strict';
 
 (function () {
-  var KEYCODE_ESC = 27;
-
   var mainElement = document.querySelector('main');
-  var popupSuccessElement = document.querySelector('#success').content.querySelector('.success');
-  var popupErrorElement = document.querySelector('#error').content.querySelector('.error');
+  var messageSuccessElement = document.querySelector('#success').content.querySelector('.success');
+  var messageErrorElement = document.querySelector('#error').content.querySelector('.error');
+  var messageElement;
 
-  var onPopupSuccessEscKeydown = function (evt) {
-    if (evt.keyCode === KEYCODE_ESC) {
-      mainElement.removeChild(popupSuccessElement);
-      document.removeEventListener('click', onPopupSuccessClick);
-      document.removeEventListener('keydown', onPopupSuccessEscKeydown);
-    }
+  var removeMessage = function () {
+    mainElement.removeChild(messageElement);
+
+    document.removeEventListener('click', onDocumentClick);
+    document.removeEventListener('keydown', onDocumentEscKeydown);
   };
 
-  var onPopupErrorEscKeydown = function (evt) {
-    if (evt.keyCode === KEYCODE_ESC) {
-      mainElement.removeChild(popupErrorElement);
-      document.removeEventListener('click', onPopupSuccessClick);
-      document.removeEventListener('keydown', onPopupSuccessEscKeydown);
-    }
+  var createMessage = function (element) {
+    return function () {
+      messageElement = element;
+
+      mainElement.appendChild(messageElement);
+
+      document.addEventListener('click', onDocumentClick);
+      document.addEventListener('keydown', onDocumentEscKeydown);
+    };
   };
 
-  var onPopupSuccessClick = function () {
-    mainElement.removeChild(popupSuccessElement);
-    document.removeEventListener('click', onPopupSuccessClick);
-    document.removeEventListener('keydown', onPopupSuccessEscKeydown);
+  var onDocumentClick = function () {
+    removeMessage();
   };
 
-  var onPopupErrorClick = function () {
-    mainElement.removeChild(popupErrorElement);
-    document.removeEventListener('click', onPopupSuccessClick);
-    document.removeEventListener('keydown', onPopupSuccessEscKeydown);
+  var onDocumentEscKeydown = function () {
+    removeMessage();
   };
 
   window.messages = {
-    createSuccessMessage: function () {
-      mainElement.appendChild(popupSuccessElement);
-
-      document.addEventListener('click', onPopupSuccessClick);
-      document.addEventListener('keydown', onPopupSuccessEscKeydown);
-    },
-    createErrorMessage: function () {
-      mainElement.appendChild(popupErrorElement);
-
-      document.addEventListener('click', onPopupErrorClick);
-      document.addEventListener('keydown', onPopupErrorEscKeydown);
-    }
+    createSuccessMessage: createMessage(messageSuccessElement),
+    createErrorMessage: createMessage(messageErrorElement),
   };
 })();

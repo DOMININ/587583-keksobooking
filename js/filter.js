@@ -32,19 +32,24 @@
   var createSelectFilter = function (typeElement, type) {
     return function (offer) {
       return typeElement.value === FILTER_VALUE_ANY ? offer : offer.offer[type].toString() === typeElement.value;
+      // разрбить
     };
   };
 
   var filterOfferByHouseType = createSelectFilter(filterHouseTypeElement, 'type');
+  var filterOfferByRooms = createSelectFilter(filterRoomsElement, 'rooms');
+  var filterOfferByGuests = createSelectFilter(filterGuestsElement, 'guests');
 
   var filterOfferByPrice = function (offer) {
-    var priceType = PRICE_RANGE_OF_TYPE[filterPriceElement.value];
-    return filterPriceElement.value === FILTER_VALUE_ANY ? offer : offer.offer.price >= priceType.min && offer.offer.price <= priceType.max;
+    var priceRestriction = PRICE_RANGE_OF_TYPE[filterPriceElement.value];
+    var priceOffer = offer.offer.price;
+
+    if (filterPriceElement.value === FILTER_VALUE_ANY) {
+      return TextTrackCueList;
+    }
+
+    return priceOffer >= priceRestriction.min && priceOffer <= priceRestriction.max;
   };
-
-  var filterOfferByRooms = createSelectFilter(filterRoomsElement, 'rooms');
-
-  var filterOfferByGuests = createSelectFilter(filterGuestsElement, 'guests');
 
   var filterOfferByFeatures = function (offer) {
     return Object.keys(featureMapValues).reduce(function (isValid, feature) {
@@ -58,34 +63,40 @@
   var featureMapValues = {};
 
   var onFilterFeaturesChange = window.debounce(function (evt) {
-    var featureName = evt.target.value;
-    var featureIsActive = document.querySelector('#filter-' + featureName).checked === true;
-    featureMapValues[featureName] = featureIsActive;
+    featureMapValues[evt.target.value] = evt.target.checked;
   });
 
-  var onFilterChange = window.debounce(function () {
-    window.pins.remove();
-    window.card.remove();
-    window.pins.create(window.filter.filterOffers(window.map.getOffers()));
-  });
+  var createFilterChangeHandler = function (offers, onFilterChange) {
+    return window.debounce(function () {
+      onFilterChange(
+          filterOffers(offers)
+      );
+    });
+  };
+
+  var onFilterChange;
+  var filterOffers = function (offers) {
+    return offers
+      .filter(filterOfferByHouseType)
+      .filter(filterOfferByPrice)
+      .filter(filterOfferByRooms)
+      .filter(filterOfferByGuests)
+      .filter(filterOfferByFeatures)
+      .slice(PINS_MIN, PINS_MAX);
+  };
 
   window.filter = {
-    filterOffers: function (offers) {
+    activate: function (offers, callbackFilterChange) {
+      onFilterChange = createFilterChangeHandler(offers, callbackFilterChange);
+
       filtersElement.addEventListener('change', onFilterChange);
       filterMapFeaturesElement.addEventListener('change', onFilterFeaturesChange);
-      return offers
-        .filter(filterOfferByHouseType)
-        .filter(filterOfferByPrice)
-        .filter(filterOfferByRooms)
-        .filter(filterOfferByGuests)
-        .filter(filterOfferByFeatures)
-        .slice(PINS_MIN, PINS_MAX);
     },
     deactivate: function () {
+      featureMapValues = {};
+      filtersElement.reset();
       filtersElement.removeEventListener('change', onFilterChange);
       filterMapFeaturesElement.removeEventListener('change', onFilterFeaturesChange);
-      filtersElement.reset();
-      featureMapValues = {};
     }
   };
 })();

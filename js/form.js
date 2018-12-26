@@ -57,17 +57,13 @@
 
     fieldCapacityElement.setCustomValidity(validityMessage);
 
-    var inputCheckValidity = evt.target.checkValidity();
-    evt.target.style.borderColor = inputCheckValidity === true ? '#d9d9d3' : 'red';
+    evt.target.style.borderColor = evt.target.checkValidity() ? COLOR_GRAY : COLOR_RED;
   };
-
-  var onFormSubmit;
 
   var formElement = document.querySelector('.ad-form');
   var formFieldsetElements = document.querySelectorAll('fieldset');
   var formSelectElements = document.querySelectorAll('select');
   var formButtonSubmitElement = document.querySelector('.ad-form__submit');
-  var formButtonResetElement = document.querySelector('.ad-form__reset');
 
   var fieldTimeInElement = document.querySelector('#timein');
   var fieldTimeOutElement = document.querySelector('#timeout');
@@ -87,22 +83,8 @@
     element.removeAttribute('disabled');
   };
 
-  var onButtonResetClick = function (evt) {
-    evt.preventDefault();
-    window.form.deactivate();
-    window.pinMain.resetPosition();
-    window.map.deactivate();
-    window.pinMain.activate();
-  };
-
   var setElementBorderColor = function (element) {
     element.style.borderColor = element.checkValidity() === false ? COLOR_RED : COLOR_GRAY;
-  };
-
-  var inputCheckValidity = function () {
-    inputsRequired.forEach(function (element) {
-      setElementBorderColor(element);
-    });
   };
 
   var resetInputBorderColor = function () {
@@ -112,7 +94,9 @@
   };
 
   var onButtonSubmitClick = function () {
-    inputCheckValidity();
+    inputsRequired.forEach(function (element) {
+      setElementBorderColor(element);
+    });
   };
 
   formFieldsetElements.forEach(function (element) {
@@ -122,48 +106,67 @@
     addDisableAttribute(element);
   });
 
+  var createFormSubmitHandler = function (onFormSubmit) {
+    return function (evt) {
+      onFormSubmit(new FormData(formElement));
+      evt.preventDefault();
+    };
+  };
+
+  var createFormResetHandler = function (onFormReset) {
+    return function () {
+      onFormReset();
+    };
+  };
+
+  var disableElements = function (elements) {
+    elements.forEach(function (element) {
+      removeDisableAttribute(element);
+    });
+  };
+
+  var resolveElements = function (elements) {
+    elements.forEach(function (element) {
+      addDisableAttribute(element);
+    });
+  };
+
+  var onFormSubmit;
+  var onFormReset;
+
   window.form = {
-    activate: function (onRequestSuccess, onRequestError) {
-      onFormSubmit = function (evt) {
-        window.backend.upload(onRequestSuccess, onRequestError, new FormData(formElement));
-        evt.preventDefault();
-      };
+    activate: function (callbackFormSubmit, callbackFormReset) {
+
+      onFormSubmit = createFormSubmitHandler(callbackFormSubmit);
+      onFormReset = createFormResetHandler(callbackFormReset);
 
       formElement.classList.remove('ad-form--disabled');
 
-      formFieldsetElements.forEach(function (element) {
-        removeDisableAttribute(element);
-      });
-      formSelectElements.forEach(function (element) {
-        removeDisableAttribute(element);
-      });
+      disableElements(formFieldsetElements);
+      disableElements(formSelectElements);
 
-      formElement.addEventListener('change', onFormChange);
       fieldTypeElement.addEventListener('change', onFieldTypeChange);
       fieldTimeInElement.addEventListener('change', onFieldTimeInChange);
       fieldTimeOutElement.addEventListener('change', onFieldTimeOutChange);
       fieldRoomNumberElement.addEventListener('change', onFieldRoomNumberChange);
 
+      formElement.addEventListener('change', onFormChange);
       formElement.addEventListener('submit', onFormSubmit);
+      formElement.addEventListener('reset', onFormReset);
 
       formButtonSubmitElement.addEventListener('click', onButtonSubmitClick);
-      formButtonResetElement.addEventListener('click', onButtonResetClick);
     },
     deactivate: function () {
       resetInputBorderColor();
 
-      formFieldsetElements.forEach(function (element) {
-        addDisableAttribute(element);
-      });
-      formSelectElements.forEach(function (element) {
-        addDisableAttribute(element);
-      });
+      resolveElements(formFieldsetElements);
+      resolveElements(formSelectElements);
 
       formElement.classList.add('ad-form--disabled');
-
       formElement.reset();
       formElement.removeEventListener('change', onFormChange);
       formElement.removeEventListener('submit', onFormSubmit);
+      formElement.removeEventListener('reset', onFormReset);
 
       fieldTypeElement.removeEventListener('change', onFieldTypeChange);
       fieldTimeInElement.removeEventListener('change', onFieldTimeInChange);
@@ -171,10 +174,9 @@
       fieldRoomNumberElement.removeEventListener('change', onFieldRoomNumberChange);
 
       formButtonSubmitElement.removeEventListener('click', onButtonSubmitClick);
-      formButtonResetElement.removeEventListener('click', onButtonResetClick);
     },
-    syncAddressField: function () {
-      fieldAddressElement.value = window.pinMain.getPositionX() + ', ' + window.pinMain.getPositionY();
-    }
+    setAddressField: function (x, y) {
+      fieldAddressElement.value = x + ', ' + y;
+    },
   };
 })();

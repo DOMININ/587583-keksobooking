@@ -42,7 +42,7 @@
         pinElement.remove();
       });
     },
-    resetActivePin: function () {
+    resetActive: function () {
       var pinCurrentElement = document.querySelector('.map__pin--active');
       if (pinCurrentElement) {
         pinCurrentElement.classList.remove('map__pin--active');

@@ -44,8 +44,7 @@
   });
 
   var previewPhotoFileDrop = createDropFileReader(function (content) {
-    photoContainerElement.removeChild(photoPlaceholderElement);
-
+    photoPlaceholderElement.remove();
     photoContainerElement.appendChild(
         createPhotoElement(content)
     );
@@ -78,11 +77,11 @@
     });
   };
 
-  var onPreviewMapFileChange = createPreviewChangeHandler(avatarFileElement, function (content) {
+  var onAvatarFileChange = createPreviewChangeHandler(avatarFileElement, function (content) {
     avatarPreviewElement.src = content;
   });
 
-  var onPreviewHouseFileChange = createPreviewChangeHandler(avatarFileElement, function (content) {
+  var onPhotoFileChange = createPreviewChangeHandler(photoFileElement, function (content) {
     var photoElement = document.createElement('div');
 
     photoElement.style.backgroundImage = 'url(' + content + ')';
@@ -111,8 +110,8 @@
       avatarDropZoneElement.addEventListener('dragover', onAvatarZoneDragover);
       photoDropZoneElement.addEventListener('dragover', onPhotoZoneDragover);
 
-      avatarFileElement.addEventListener('change', onPreviewMapFileChange);
-      photoFileElement.addEventListener('change', onPreviewHouseFileChange);
+      avatarFileElement.addEventListener('change', onAvatarFileChange);
+      photoFileElement.addEventListener('change', onPhotoFileChange);
 
       window.addEventListener('dragover', onWindowDragover);
       window.addEventListener('drop', onWindowDrop);
@@ -124,13 +123,13 @@
 
       photoContainerElement.appendChild(photoPlaceholderElement);
 
-      avatarDropZoneElement.addEventListener('drop', onAvatarZoneDrop);
-      photoDropZoneElement.addEventListener('drop', onPhotoZoneDrop);
-      avatarDropZoneElement.addEventListener('dragover', onAvatarZoneDragover);
-      photoDropZoneElement.addEventListener('dragover', onPhotoZoneDragover);
+      avatarDropZoneElement.removeEventListener('drop', onAvatarZoneDrop);
+      photoDropZoneElement.removeEventListener('drop', onPhotoZoneDrop);
+      avatarDropZoneElement.removeEventListener('dragover', onAvatarZoneDragover);
+      photoDropZoneElement.removeEventListener('dragover', onPhotoZoneDragover);
 
-      avatarFileElement.removeEventListener('change', onPreviewMapFileChange);
-      photoFileElement.removeEventListener('change', onPreviewHouseFileChange);
+      avatarFileElement.removeEventListener('change', onAvatarFileChange);
+      photoFileElement.removeEventListener('change', onPhotoFileChange);
 
       window.removeEventListener('dragover', onWindowDragover);
       window.removeEventListener('drop', onWindowDrop);

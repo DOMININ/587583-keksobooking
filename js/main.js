@@ -54,7 +54,7 @@
   };
 
   var onMainPinMouseUp = function () {
-    if (!window.map.isActivated) {
+    if (!window.map.isActivated()) {
       activateApplication();
     }
   };

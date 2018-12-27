@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
+
   var mainElement = document.querySelector('main');
   var messageSuccessElement = document.querySelector('#success').content.querySelector('.success');
   var messageErrorElement = document.querySelector('#error').content.querySelector('.error');
@@ -15,8 +17,11 @@
 
   var createMessage = function (element) {
     return function () {
-      messageElement = element;
+      if (messageElement) {
+        removeMessage();
+      }
 
+      messageElement = element;
       mainElement.appendChild(messageElement);
 
       document.addEventListener('click', onDocumentClick);
@@ -28,8 +33,10 @@
     removeMessage();
   };
 
-  var onDocumentEscKeydown = function () {
-    removeMessage();
+  var onDocumentEscKeydown = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      removeMessage();
+    }
   };
 
   window.messages = {

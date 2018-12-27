@@ -13,6 +13,8 @@
 
     document.removeEventListener('click', onDocumentClick);
     document.removeEventListener('keydown', onDocumentEscKeydown);
+
+    messageElement = null;
   };
 
   var createMessage = function (element) {

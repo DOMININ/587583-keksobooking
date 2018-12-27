@@ -116,18 +116,23 @@
     return cardElement;
   };
 
+  var createCard = function (data) {
+    var cardElement = createCardElement(data);
+    var cardCloseElement = cardElement.querySelector('.popup__close');
+
+    mapElement.insertBefore(cardElement, mapFiltersElement);
+
+    cardCloseElement.addEventListener('click', onCardCloseClick);
+    document.addEventListener('keydown', onDocumentEscKeydown);
+  };
+
   var mapElement = document.querySelector('.map');
   var mapFiltersElement = document.querySelector('.map__filters-container');
   var cardElement = document.querySelector('#card').cloneNode(true);
   var cardTemplateElement = cardElement.content.querySelector('.map__card');
 
   window.card = {
-    create: function (data) {
-      mapElement.insertBefore(createCardElement(data), mapFiltersElement);
-      document.addEventListener('keydown', onDocumentEscKeydown);
-    },
-    remove: function () {
-      removeCard();
-    }
+    create: createCard,
+    remove: removeCard
   };
 })();

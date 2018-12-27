@@ -7,10 +7,10 @@
   var COLOR_RED = 'red';
 
   var OfferPrices = {
-    palace: '10000',
-    flat: '1000',
-    house: '5000',
-    bungalo: '0'
+    palace: 10000,
+    flat: 1000,
+    house: 5000,
+    bungalo: 0
   };
 
   var ValidationCapacityMap = {
@@ -94,17 +94,11 @@
   };
 
   var onButtonSubmitClick = function () {
-    inputsRequiredElements.forEach(function (element) {
-      setElementBorderColor(element);
-    });
+    inputsRequiredElements.forEach(setElementBorderColor);
   };
 
-  formFieldsetElements.forEach(function (element) {
-    addDisableAttribute(element);
-  });
-  formSelectElements.forEach(function (element) {
-    addDisableAttribute(element);
-  });
+  formFieldsetElements.forEach(addDisableAttribute);
+  formSelectElements.forEach(addDisableAttribute);
 
   var createFormSubmitHandler = function (cb) {
     return function (evt) {
@@ -122,15 +116,11 @@
   };
 
   var disableElements = function (elements) {
-    elements.forEach(function (element) {
-      removeDisableAttribute(element);
-    });
+    elements.forEach(removeDisableAttribute);
   };
 
   var resolveElements = function (elements) {
-    elements.forEach(function (element) {
-      addDisableAttribute(element);
-    });
+    elements.forEach(addDisableAttribute);
   };
 
   var onFormSubmit;

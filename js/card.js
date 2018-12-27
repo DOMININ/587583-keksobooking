@@ -30,8 +30,7 @@
 
   var onDocumentEscKeydown = function (evt) {
     if (evt.keyCode === KEYCODE_ESC) {
-      removeCardElement();
-      window.pins.resetActive();
+      removeCard();
     }
   };
 

@@ -2,25 +2,23 @@
 
 (function () {
   var DEFAULT_PHOTO = 'img/muffin-grey.svg';
-  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  var FILE_EXTENSIONS = ['gif', 'jpg', 'jpeg', 'png'];
 
-  var mapFileChooserElement = document.querySelector('.ad-form-header__input');
-  var mapPreviewElement = document.querySelector('.ad-form-header__preview img');
+  var avatarFileElement = document.querySelector('.ad-form-header__input');
+  var avatarPreviewElement = document.querySelector('.ad-form-header__preview img');
+  var avatarDropZoneElement = document.querySelector('.ad-form-header__drop-zone');
 
-  var houseFileChooserElement = document.querySelector('.ad-form__input');
-  var housePreviewElement = document.querySelector('.ad-form__photo');
-  var houseContainerElement = document.querySelector('.ad-form__photo-container');
+  var photoFileElement = document.querySelector('.ad-form__input');
+  var photoContainerElement = document.querySelector('.ad-form__photo-container');
+  var photoDropZoneElement = document.querySelector('.ad-form__drop-zone');
+  var photoPlaceholderElement = document.querySelector('.ad-form__photo');
 
-  var dropZoneMapElement = document.querySelector('.ad-form-header__drop-zone');
-  var dropZoneHouseElement = document.querySelector('.ad-form__drop-zone');
-
-
-  var createPreviewDrop = function (callback) {
+  var createDropFileReader = function (onLoad) {
     return function (file) {
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = function () {
-        callback(reader.result);
+        onLoad(reader.result);
       };
     };
   };
@@ -31,113 +29,107 @@
     };
   };
 
-  var previewMapFileDrop = createPreviewDrop(function (content) {
-    mapPreviewElement.src = content;
+  var createPhotoElement = function (content) {
+    var element = document.createElement('div');
+
+    element.style.backgroundImage = 'url(' + content + ')';
+    element.style.backgroundSize = 'cover';
+    element.classList.add('ad-form__photo');
+
+    return element;
+  };
+
+  var previewAvatarFileDrop = createDropFileReader(function (content) {
+    avatarPreviewElement.src = content;
   });
 
-  var previewHouseFileDrop = createPreviewDrop(function (content) {
-    var blockPhotoElement = document.createElement('div');
-
-    blockPhotoElement.style.backgroundImage = 'url(' + content + ')';
-    blockPhotoElement.style.backgroundSize = 'cover';
-    blockPhotoElement.classList.add('ad-form__photo');
-
-    housePreviewElement.remove();
-    houseContainerElement.appendChild(blockPhotoElement);
+  var previewPhotoFileDrop = createDropFileReader(function (content) {
+    photoPlaceholderElement.remove();
+    photoContainerElement.appendChild(
+        createPhotoElement(content)
+    );
   });
 
-  var createPreviewChange = function (fileChooser, callback) {
+  var createPreviewChangeHandler = function (fileElement, onLoad) {
     return function () {
-      var file = fileChooser.files[0];
+      var file = fileElement.files[0];
       var fileName = file.name.toLowerCase();
 
-      var matches = FILE_TYPES.some(function (it) {
-        return fileName.endsWith(it);
+      var matches = FILE_EXTENSIONS.some(function (extension) {
+        return fileName.endsWith(extension);
       });
 
       if (matches) {
         var reader = new FileReader();
-
         reader.onloadend = function () {
-          callback(reader.result);
+          onLoad(reader.result);
         };
-
         reader.readAsDataURL(file);
       }
     };
   };
 
   var removePhotos = function () {
-    var photoElements = document.querySelectorAll('.ad-form__photo');
+    var elements = document.querySelectorAll('.ad-form__photo');
 
-    Array.prototype.forEach.call(photoElements, function (element) {
+    Array.prototype.forEach.call(elements, function (element) {
       element.remove();
     });
   };
 
-  var createPhotoPlaceholder = function () {
-    var blockPhotoDefaultElement = document.createElement('div');
-
-    blockPhotoDefaultElement.classList.add('ad-form__photo');
-    houseContainerElement.appendChild(blockPhotoDefaultElement);
-  };
-
-  var preventDefaultHandler = function (evt) {
-    evt.preventDefault();
-  };
-
-  var onZoneMapDrop = createImageDropHandler(previewMapFileDrop);
-  var onZoneHouseDrop = createImageDropHandler(previewHouseFileDrop);
-  var onZoneMapDragover = preventDefaultHandler;
-  var onZoneHouseDragover = preventDefaultHandler;
-
-  var onWindowDragover = preventDefaultHandler;
-  var onWindowDrop = preventDefaultHandler;
-
-  var onPreviewMapFileChange = createPreviewChange(mapFileChooserElement, function (content) {
-    mapPreviewElement.src = content;
+  var onAvatarFileChange = createPreviewChangeHandler(avatarFileElement, function (content) {
+    avatarPreviewElement.src = content;
   });
 
-  var onPreviewHouseFileChange = createPreviewChange(houseFileChooserElement, function (content) {
+  var onPhotoFileChange = createPreviewChangeHandler(photoFileElement, function (content) {
     var photoElement = document.createElement('div');
 
     photoElement.style.backgroundImage = 'url(' + content + ')';
     photoElement.style.backgroundSize = 'cover';
     photoElement.classList.add('ad-form__photo');
 
-    housePreviewElement.remove();
-    houseContainerElement.appendChild(photoElement);
+    photoPlaceholderElement.remove();
+    photoContainerElement.appendChild(photoElement);
   });
 
+  var preventEventHandler = function (evt) {
+    evt.preventDefault();
+  };
+
+  var onAvatarZoneDrop = createImageDropHandler(previewAvatarFileDrop);
+  var onAvatarZoneDragover = preventEventHandler;
+  var onPhotoZoneDrop = createImageDropHandler(previewPhotoFileDrop);
+  var onPhotoZoneDragover = preventEventHandler;
+  var onWindowDragover = preventEventHandler;
+  var onWindowDrop = preventEventHandler;
 
   window.formPhoto = {
     activate: function () {
-      housePreviewElement = document.querySelector('.ad-form__photo');
+      avatarDropZoneElement.addEventListener('drop', onAvatarZoneDrop);
+      photoDropZoneElement.addEventListener('drop', onPhotoZoneDrop);
+      avatarDropZoneElement.addEventListener('dragover', onAvatarZoneDragover);
+      photoDropZoneElement.addEventListener('dragover', onPhotoZoneDragover);
 
-      dropZoneMapElement.addEventListener('drop', onZoneMapDrop);
-      dropZoneHouseElement.addEventListener('drop', onZoneHouseDrop);
-      dropZoneMapElement.addEventListener('dragover', onZoneMapDragover);
-      dropZoneHouseElement.addEventListener('dragover', onZoneHouseDragover);
-
-      mapFileChooserElement.addEventListener('change', onPreviewMapFileChange);
-      houseFileChooserElement.addEventListener('change', onPreviewHouseFileChange);
+      avatarFileElement.addEventListener('change', onAvatarFileChange);
+      photoFileElement.addEventListener('change', onPhotoFileChange);
 
       window.addEventListener('dragover', onWindowDragover);
       window.addEventListener('drop', onWindowDrop);
     },
     deactivate: function () {
-      mapPreviewElement.src = DEFAULT_PHOTO;
+      avatarPreviewElement.src = DEFAULT_PHOTO;
 
       removePhotos();
-      createPhotoPlaceholder();
 
-      dropZoneMapElement.removeEventListener('drop', onZoneMapDrop);
-      dropZoneHouseElement.removeEventListener('drop', onZoneHouseDrop);
-      dropZoneMapElement.addEventListener('dragover', onZoneMapDragover);
-      dropZoneHouseElement.addEventListener('dragover', onZoneHouseDragover);
+      photoContainerElement.appendChild(photoPlaceholderElement);
 
-      mapFileChooserElement.removeEventListener('change', onPreviewMapFileChange);
-      houseFileChooserElement.removeEventListener('change', onPreviewHouseFileChange);
+      avatarDropZoneElement.removeEventListener('drop', onAvatarZoneDrop);
+      photoDropZoneElement.removeEventListener('drop', onPhotoZoneDrop);
+      avatarDropZoneElement.removeEventListener('dragover', onAvatarZoneDragover);
+      photoDropZoneElement.removeEventListener('dragover', onPhotoZoneDragover);
+
+      avatarFileElement.removeEventListener('change', onAvatarFileChange);
+      photoFileElement.removeEventListener('change', onPhotoFileChange);
 
       window.removeEventListener('dragover', onWindowDragover);
       window.removeEventListener('drop', onWindowDrop);

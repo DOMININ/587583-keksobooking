@@ -15,31 +15,38 @@
     element.querySelector('img').src = data.author.avatar;
     element.querySelector('img').alt = TEXT_OFFER_TITLE;
 
-    var handleClick = function () {
-      window.card.remove();
-      window.card.create(data);
-    };
-
-    element.addEventListener('click', handleClick);
-
     return element;
   };
 
   window.pins = {
-    create: function (offers) {
+    create: function (offers, onPinClick) {
       var fragment = document.createDocumentFragment();
 
       offers.forEach(function (offer) {
-        fragment.appendChild(createPinElement(offer));
+        var element = createPinElement(offer);
+
+        element.addEventListener('click', function () {
+          onPinClick(offer);
+          element.classList.add('map__pin--active');
+        });
+
+        fragment.appendChild(element);
       });
 
       return pinsElement.appendChild(fragment);
     },
     remove: function () {
       var pinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
       Array.prototype.forEach.call(pinElements, function (pinElement) {
         pinElement.remove();
       });
+    },
+    resetActive: function () {
+      var pinCurrentElement = document.querySelector('.map__pin--active');
+      if (pinCurrentElement) {
+        pinCurrentElement.classList.remove('map__pin--active');
+      }
     }
   };
 })();

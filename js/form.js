@@ -27,13 +27,7 @@
     fieldPriceElement.setAttribute('placeholder', priceValue);
   };
 
-  var onFieldTypeChange = function (evt) {
-    var typeValue = evt.target.value;
-    var priceValue = OfferPrices[typeValue];
-
-    fieldPriceElement.setAttribute('min', priceValue);
-    fieldPriceElement.setAttribute('placeholder', priceValue);
-
+  var onFieldTypeChange = function () {
     syncTypePriceFields();
   };
 

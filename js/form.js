@@ -135,6 +135,8 @@
   var onFormSubmit;
   var onFormReset;
 
+  syncTypePriceFields();
+
   window.form = {
     activate: function (callbackFormSubmit, callbackFormReset) {
 

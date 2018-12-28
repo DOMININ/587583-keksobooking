@@ -20,19 +20,21 @@
     '100': ['0']
   };
 
+  var syncTypePriceFields = function () {
+    var priceValue = OfferPrices[fieldTypeElement.value];
+
+    fieldPriceElement.setAttribute('min', priceValue);
+    fieldPriceElement.setAttribute('placeholder', priceValue);
+  };
+
   var onFieldTypeChange = function (evt) {
     var typeValue = evt.target.value;
     var priceValue = OfferPrices[typeValue];
 
     fieldPriceElement.setAttribute('min', priceValue);
     fieldPriceElement.setAttribute('placeholder', priceValue);
-  };
 
-  var syncTypePriceFields = function () {
-    var priceValue = OfferPrices[fieldTypeElement.value];
-
-    fieldPriceElement.setAttribute('min', priceValue);
-    fieldPriceElement.setAttribute('placeholder', priceValue);
+    syncTypePriceFields();
   };
 
   var onFieldTimeInChange = function (evt) {
@@ -132,8 +134,6 @@
 
   var onFormSubmit;
   var onFormReset;
-
-  syncTypePriceFields();
 
   window.form = {
     activate: function (callbackFormSubmit, callbackFormReset) {

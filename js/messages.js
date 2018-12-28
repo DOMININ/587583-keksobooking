@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var ERROR_NETWORK = 'Сервис недоступен. Попробуйте позже';
+
   var ESC_KEYCODE = 27;
 
   var mainElement = document.querySelector('main');
@@ -40,7 +42,7 @@
 
       var element = messageErrorElement.cloneNode(true);
 
-      element.querySelector('.error__message').textContent = 'Сервис недоступен. Попробуйте позже';
+      element.querySelector('.error__message').textContent = ERROR_NETWORK;
       element.querySelector('.error__button').remove();
 
       messageElement = element;

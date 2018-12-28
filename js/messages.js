@@ -32,16 +32,16 @@
     };
   };
 
-  var createNetworkErrorMessage = function (element) {
+  var createNetworkErrorMessage = function () {
     return function () {
       if (messageElement) {
         removeMessage();
       }
 
-      element.querySelector('.error__message').textContent = 'Сервис недоступен. Попробуйте позже';
-      element.querySelector('.error__button').remove();
+      messageErrorElement.querySelector('.error__message').textContent = 'Сервис недоступен. Попробуйте позже';
+      messageErrorElement.querySelector('.error__button').remove();
 
-      messageElement = element;
+      messageElement = messageErrorElement;
       mainElement.appendChild(messageElement);
     };
   };
@@ -59,6 +59,6 @@
   window.messages = {
     createSuccessMessage: createMessage(messageSuccessElement),
     createErrorMessage: createMessage(messageErrorElement),
-    createNetworkErrorMessage: createNetworkErrorMessage(messageErrorElement)
+    createNetworkErrorMessage: createNetworkErrorMessage()
   };
 })();

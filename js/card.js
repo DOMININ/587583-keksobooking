@@ -3,7 +3,7 @@
 (function () {
   var TEXT_CAPACITY = '{rooms} комнаты для {guests} гостей';
   var TEXT_TIME = 'Заезд после {checkin}, выезд до {checkout}';
-  var TEXT_PRICE = '?/ночь';
+  var TEXT_PRICE = '₽/ночь';
 
   var PICTURE_IMAGE_WIDTH = 45;
   var PICTURE_IMAGE_HEIGHT = 40;

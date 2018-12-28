@@ -1,11 +1,14 @@
 'use strict';
 
 (function () {
+  var ERROR_NETWORK = 'Сервис недоступен. Попробуйте позже';
+
   var ESC_KEYCODE = 27;
 
   var mainElement = document.querySelector('main');
   var messageSuccessElement = document.querySelector('#success').content.querySelector('.success');
   var messageErrorElement = document.querySelector('#error').content.querySelector('.error');
+
   var messageElement;
 
   var removeMessage = function () {
@@ -31,6 +34,22 @@
     };
   };
 
+  var createNetworkErrorMessage = function () {
+    return function () {
+      if (messageElement) {
+        removeMessage();
+      }
+
+      var element = messageErrorElement.cloneNode(true);
+
+      element.querySelector('.error__message').textContent = ERROR_NETWORK;
+      element.querySelector('.error__button').remove();
+
+      messageElement = element;
+      mainElement.appendChild(messageElement);
+    };
+  };
+
   var onDocumentClick = function () {
     removeMessage();
   };
@@ -44,5 +63,6 @@
   window.messages = {
     createSuccessMessage: createMessage(messageSuccessElement),
     createErrorMessage: createMessage(messageErrorElement),
+    createNetworkErrorMessage: createNetworkErrorMessage()
   };
 })();

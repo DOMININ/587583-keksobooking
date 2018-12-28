@@ -20,12 +20,15 @@
     '100': ['0']
   };
 
-  var onFieldTypeChange = function (evt) {
-    var typeValue = evt.target.value;
-    var priceValue = OfferPrices[typeValue];
+  var syncTypePriceFields = function () {
+    var priceValue = OfferPrices[fieldTypeElement.value];
 
     fieldPriceElement.setAttribute('min', priceValue);
     fieldPriceElement.setAttribute('placeholder', priceValue);
+  };
+
+  var onFieldTypeChange = function () {
+    syncTypePriceFields();
   };
 
   var onFieldTimeInChange = function (evt) {
@@ -125,6 +128,8 @@
 
   var onFormSubmit;
   var onFormReset;
+
+  syncTypePriceFields();
 
   window.form = {
     activate: function (callbackFormSubmit, callbackFormReset) {

@@ -79,8 +79,14 @@
       window.pinMain.getPositionY()
   );
 
-  window.backend.load(function (offers) {
+  var onLoadSuccess = function (offers) {
     loadedOffers = offers;
     window.pinMain.activate(onMainPinMouseUp, onMainPinMouseMove);
-  });
+  };
+
+  var onLoadError = function (error) {
+    window.messages.createNetworkErrorMessage(error);
+  };
+
+  window.backend.load(onLoadSuccess, onLoadError);
 })();

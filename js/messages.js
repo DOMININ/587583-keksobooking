@@ -6,6 +6,7 @@
   var mainElement = document.querySelector('main');
   var messageSuccessElement = document.querySelector('#success').content.querySelector('.success');
   var messageErrorElement = document.querySelector('#error').content.querySelector('.error');
+
   var messageElement;
 
   var removeMessage = function () {
@@ -31,6 +32,20 @@
     };
   };
 
+  var createNetworkErrorMessage = function (element) {
+    return function () {
+      if (messageElement) {
+        removeMessage();
+      }
+
+      element.querySelector('.error__message').textContent = 'Сервис недоступен. Попробуйте позже';
+      element.querySelector('.error__button').remove();
+
+      messageElement = element;
+      mainElement.appendChild(messageElement);
+    };
+  };
+
   var onDocumentClick = function () {
     removeMessage();
   };
@@ -44,5 +59,6 @@
   window.messages = {
     createSuccessMessage: createMessage(messageSuccessElement),
     createErrorMessage: createMessage(messageErrorElement),
+    createNetworkErrorMessage: createNetworkErrorMessage(messageErrorElement)
   };
 })();

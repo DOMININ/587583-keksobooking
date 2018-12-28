@@ -38,10 +38,12 @@
         removeMessage();
       }
 
-      messageErrorElement.querySelector('.error__message').textContent = 'Сервис недоступен. Попробуйте позже';
-      messageErrorElement.querySelector('.error__button').remove();
+      var element = messageErrorElement.cloneNode(true);
 
-      messageElement = messageErrorElement;
+      element.querySelector('.error__message').textContent = 'Сервис недоступен. Попробуйте позже';
+      element.querySelector('.error__button').remove();
+
+      messageElement = element;
       mainElement.appendChild(messageElement);
     };
   };

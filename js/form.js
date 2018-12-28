@@ -28,6 +28,13 @@
     fieldPriceElement.setAttribute('placeholder', priceValue);
   };
 
+  var syncTypePriceFields = function () {
+    var priceValue = OfferPrices[fieldTypeElement.value];
+
+    fieldPriceElement.setAttribute('min', priceValue);
+    fieldPriceElement.setAttribute('placeholder', priceValue);
+  };
+
   var onFieldTimeInChange = function (evt) {
     fieldTimeOutElement.value = evt.target.value;
   };
@@ -125,6 +132,8 @@
 
   var onFormSubmit;
   var onFormReset;
+
+  syncTypePriceFields();
 
   window.form = {
     activate: function (callbackFormSubmit, callbackFormReset) {
